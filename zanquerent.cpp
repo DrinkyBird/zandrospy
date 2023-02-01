@@ -237,8 +237,6 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     server.flags = buffer.read<uint32_t>();
     int numPlayers = 0;
 
-    printf("%s\n", server.version.c_str());
-
     if (server.flags & SQF_NAME) {
         server.name = buffer.readString();
     }
