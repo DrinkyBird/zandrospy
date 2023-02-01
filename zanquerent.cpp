@@ -81,8 +81,13 @@ std::string ZanQuerent::makeServerId(const sockaddr_in &origin) {
 
 void ZanQuerent::receive() {
     timeval timeout{};
+#ifdef _WIN32
+    timeout.tv_sec = 1;
+    timeout.tv_usec = 0;
+#else
     timeout.tv_sec = 0;
     timeout.tv_usec = 500000;
+#endif
 
     setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
 
@@ -198,6 +203,7 @@ void ZanQuerent::workQueryQueue() {
             app->serverData[pair.first] = pair.second;
         }
         pthread_mutex_unlock(&app->serverDataMutex);
+        printf("Refresh completed, data swapped.\n");
         stagingData.clear();
     }
 }
@@ -231,6 +237,8 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     server.version = buffer.readString();
     server.flags = buffer.read<uint32_t>();
     int numPlayers = 0;
+
+    printf("%s\n", server.version.c_str());
 
     if (server.flags & SQF_NAME) {
         server.name = buffer.readString();
@@ -341,6 +349,16 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
             }
             player.time = buffer.read<int8_t>();
             server.players.emplace_back(player);
+
+            if (!player.bot) {
+                server.numHumanPlayers++;
+            }
+
+            if (player.spectator) {
+                server.numSpectators++;
+            } else {
+                server.numInGamePlayers++;
+            }
         }
     }
 

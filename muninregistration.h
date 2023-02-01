@@ -9,17 +9,15 @@ class MuninNode;
 class MuninPlugin;
 class ExecutionContext;
 
-typedef void (*ConfigCallback)(ExecutionContext &);
-typedef void (*FetchCallback)(ExecutionContext &);
+typedef void (*PluginCallback)(ExecutionContext &);
 
 class MuninPlugin {
 public:
-    MuninPlugin(const std::string &name, ConfigCallback configCallback, FetchCallback fetchCallback) noexcept;
+    MuninPlugin(const std::string &name, PluginCallback callback) noexcept;
     ~MuninPlugin();
 
     [[nodiscard]] std::string getName() const;
-    void config(ExecutionContext &context);
-    void fetch(ExecutionContext &context);
+    void execute(ExecutionContext &context);
 
     static MuninPlugin *first;
     MuninPlugin *next;
@@ -28,13 +26,12 @@ public:
 
 private:
     std::string name;
-    ConfigCallback configCallback;
-    FetchCallback fetchCallback;
+    PluginCallback callback;
 };
 
 class ExecutionContext {
 public:
-    explicit ExecutionContext(App *app, MuninNode *node);
+    explicit ExecutionContext(App *app, MuninNode *node, bool config, bool fetch);
     ~ExecutionContext();
 
     void write(const std::string &line);
@@ -44,14 +41,16 @@ public:
     void lockServerData();
     void unlockServerData();
 
+    inline bool isConfig() const { return config; }
+    inline bool isFetch() const { return fetch; }
+
 private:
     App *app;
     MuninNode *node;
+    bool config, fetch;
 };
 
-#define DEFINE_PLUGIN_CONFIG(name) static void __config_##name(::ExecutionContext &ctx)
-#define DEFINE_PLUGIN_FETCH(name) static void __fetch_##name(::ExecutionContext &ctx)
-#define REGISTER_PLUGIN(name) \
-    static void __config_##name(::ExecutionContext &);    \
-    static void __fetch_##name(::ExecutionContext &);     \
-    static ::MuninPlugin __register_##name(#name, __config_##name, __fetch_##name)
+#define REGISTER_PLUGIN(name)                                           \
+    static void __callback_##name(::ExecutionContext &);                \
+    static ::MuninPlugin __register_##name(#name, __callback_##name);   \
+    void __callback_##name(::ExecutionContext &ctx)

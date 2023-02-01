@@ -130,10 +130,12 @@ void MuninNode::doRead() {
                 if (plug == nullptr) {
                     send("# Unknown service");
                 } else {
-                    ExecutionContext ctx{app, this};
-                    plug->config(ctx);
                     if (useDirtyConfig) {
-                        plug->fetch(ctx);
+                        ExecutionContext ctx{app, this, true, true};
+                        plug->execute(ctx);
+                    } else {
+                        ExecutionContext ctx{app, this, true, false};
+                        plug->execute(ctx);
                     }
                 }
                 send(".");
@@ -145,8 +147,8 @@ void MuninNode::doRead() {
                 if (plug == nullptr) {
                     send("# Unknown service");
                 } else {
-                    ExecutionContext ctx{app, this};
-                    plug->fetch(ctx);
+                    ExecutionContext ctx{app, this, false, true};
+                    plug->execute(ctx);
                 }
                 send(".");
             }

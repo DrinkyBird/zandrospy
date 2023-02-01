@@ -38,7 +38,7 @@ struct ZanServer {
         gamemode(0), instagib(false), buckshot(false),
         forcePassword(false), forceJoinPassword(false),
         skill(0), botSkill(-1), fragLimit(0), timeLimit(0), timeLeft(0), duelLimit(0), pointLimit(0), winLimit(0),
-        teamDamage(0.0f), players(), teams(), isTestingBuild(false),
+        teamDamage(0.0f), players(), numHumanPlayers(0), numInGamePlayers(0), numSpectators(0), teams(), isTestingBuild(false),
         dmflags(0), dmflags2(0), zadmflags(0), compatflags(0), zacompatflags(0), compatflags2(0),
         dehackedPatches(), country("XUN") {}
 
@@ -72,6 +72,9 @@ struct ZanServer {
     int winLimit;
     float teamDamage;
     std::vector<ZanPlayer> players;
+    int numHumanPlayers;
+    int numInGamePlayers;
+    int numSpectators;
     std::vector<ZanTeam> teams;
     bool isTestingBuild;
     std::string testBuildUrl;

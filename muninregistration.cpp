@@ -6,8 +6,8 @@
 
 MuninPlugin *MuninPlugin::first = nullptr;
 
-MuninPlugin::MuninPlugin(const std::string &name, ConfigCallback configCallback, FetchCallback fetchCallback) noexcept :
-    name(name), configCallback(configCallback), fetchCallback(fetchCallback) {
+MuninPlugin::MuninPlugin(const std::string &name, PluginCallback callback) noexcept :
+    name(name), callback(callback) {
     if (first != nullptr) {
         next = first;
     }
@@ -19,17 +19,13 @@ std::string MuninPlugin::getName() const {
     return this->name;
 }
 
-void MuninPlugin::config(ExecutionContext &context) {
-    this->configCallback(context);
-}
-
-void MuninPlugin::fetch(ExecutionContext &context) {
-    this->fetchCallback(context);
+void MuninPlugin::execute(ExecutionContext &context) {
+    this->callback(context);
 }
 
 
-ExecutionContext::ExecutionContext(App *app, MuninNode *node) :
-    app(app), node(node) { }
+ExecutionContext::ExecutionContext(App *app, MuninNode *node, bool config, bool fetch) :
+    app(app), node(node), fetch(fetch), config(config) { }
 
 ExecutionContext::~ExecutionContext() = default;
 
