@@ -31,7 +31,7 @@ add_executable(zandrospy
     huffman/huffcodec.h
     huffman/huffman.cpp
     huffman/huffman.h
-    plugins/version.cpp)
+    plugins/version.cpp plugins/servers.cpp)
 
 if (WIN32)
     target_link_libraries(zandrospy PRIVATE ws2_32)
