@@ -7,14 +7,20 @@ add_executable(zandrospy
     buffer.cpp
     buffer.h
     main.cpp
+    main.h
     muninnode.cpp
     muninnode.h
+    muninregistration.cpp
+    muninregistration.h
     socket.h
     socket.cpp
     util.h
     zanproto.h
     zanquerent.cpp
     zanquerent.h
+    zanserver.h
+
+    plugins/testplugin.cpp
 
     huffman/bitreader.cpp
     huffman/bitreader.h
@@ -25,7 +31,7 @@ add_executable(zandrospy
     huffman/huffcodec.h
     huffman/huffman.cpp
     huffman/huffman.h
-    zanserver.h muninregistration.cpp muninregistration.h plugins/testplugin.cpp main.h)
+)
 
 if (WIN32)
     target_link_libraries(zandrospy PRIVATE ws2_32)
