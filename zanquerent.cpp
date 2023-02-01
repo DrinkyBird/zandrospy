@@ -38,7 +38,7 @@ ZanQuerent::~ZanQuerent() {
 }
 
 void ZanQuerent::run() {
-    if (time(nullptr) - lastQueryTime > 60) {
+    if (time(nullptr) - lastQueryTime > 120) {
         queryMaster();
         lastQueryTime = time(nullptr);
     }
@@ -82,7 +82,7 @@ std::string ZanQuerent::makeServerId(const sockaddr_in &origin) {
 
 void ZanQuerent::receive() {
     timeval timeout{};
-    timeout.tv_sec = 5;
+    timeout.tv_sec = 1;
     timeout.tv_usec = 0;
 
     setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
