@@ -1,4 +1,5 @@
 #include <pthread.h>
+#include <cstdarg>
 #include "muninregistration.h"
 #include "main.h"
 #include "muninnode.h"

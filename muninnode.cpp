@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstring>
 #include "muninnode.h"
 #include "util.h"
 #include "muninregistration.h"
@@ -18,9 +19,7 @@ MuninNode::MuninNode(App *app) :
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddr.sin_port = htons(14949);
 
-#ifdef _WIN32
     char yes = 1;
-#endif
     err = setsockopt(server, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
     if (err == SOCKET_ERROR) {
         socket_perror("setsockopt");
