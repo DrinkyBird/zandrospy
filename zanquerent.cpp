@@ -82,8 +82,8 @@ std::string ZanQuerent::makeServerId(const sockaddr_in &origin) {
 
 void ZanQuerent::receive() {
     timeval timeout{};
-    timeout.tv_sec = 1;
-    timeout.tv_usec = 0;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 500000;
 
     setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout));
 

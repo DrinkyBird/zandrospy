@@ -28,8 +28,8 @@ REGISTER_PLUGIN(players);
 DEFINE_PLUGIN_CONFIG(players) {
     ctx.write("graph_title Total players");
     ctx.write("graph_category servers");
-    ctx.write("servers.label Players");
-    ctx.write("servers.min 0");
+    ctx.write("players.label Players");
+    ctx.write("players.min 0");
 }
 
 DEFINE_PLUGIN_FETCH(players) {
