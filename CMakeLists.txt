@@ -20,7 +20,10 @@ add_executable(zandrospy
     zanquerent.h
     zanserver.h
 
-    plugins/testplugin.cpp
+    plugins/players.cpp
+    plugins/servers.cpp
+    plugins/version.cpp
+    plugins/wads.cpp
 
     huffman/bitreader.cpp
     huffman/bitreader.h
@@ -31,7 +34,7 @@ add_executable(zandrospy
     huffman/huffcodec.h
     huffman/huffman.cpp
     huffman/huffman.h
-    plugins/version.cpp plugins/servers.cpp plugins/wads.cpp)
+)
 
 if (WIN32)
     target_link_libraries(zandrospy PRIVATE ws2_32)

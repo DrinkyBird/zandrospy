@@ -59,6 +59,7 @@ REGISTER_PLUGIN(servers_response) {
                 ctx.writef("%d.label %d", pair.first, pair.first);
             }
             ctx.writef("%d.min 0", pair.first);
+            ctx.writef("%d.draw AREASTACK", pair.first);
         }
     }
 
