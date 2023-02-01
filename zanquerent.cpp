@@ -38,7 +38,7 @@ ZanQuerent::~ZanQuerent() {
 }
 
 void ZanQuerent::run() {
-    if (time(nullptr) - lastQueryTime > 120) {
+    if (time(nullptr) - lastQueryTime > 200) {
         queryMaster();
         lastQueryTime = time(nullptr);
     }
