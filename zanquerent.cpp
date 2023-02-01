@@ -10,7 +10,6 @@
 
 static constexpr uint16_t MASTER_PORT = 15300;
 
-
 ZanQuerent::ZanQuerent(App *app) :
     app(app),
     socket(INVALID_SOCKET), lastQueryTime(0) {

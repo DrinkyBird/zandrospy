@@ -2,18 +2,6 @@
 #include "muninregistration.h"
 #include "util.h"
 
-static std::string filterVersion(const std::string &ver) {
-    std::stringstream ss;
-    for (const char &c : ver) {
-        if (!std::isalnum(c)) {
-            ss << '_';
-        } else {
-            ss << c;
-        }
-    }
-    return ss.str();
-}
-
 REGISTER_PLUGIN(versions_servers) {
     std::unordered_map<std::string, int> map;
     ctx.lockServerData();
@@ -38,7 +26,7 @@ REGISTER_PLUGIN(versions_servers) {
         ctx.write("graph_category version");
 
         for (const auto &pair : map) {
-            auto filtered = filterVersion(pair.first);
+            auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
         }
@@ -46,7 +34,7 @@ REGISTER_PLUGIN(versions_servers) {
 
     if (ctx.isFetch()) {
         for (const auto &pair : map) {
-            auto filtered = filterVersion(pair.first);
+            auto filtered = filterKey(pair.first);
             ctx.writef("%s.value %d", filtered.c_str(), pair.second);
         }
     }
@@ -77,7 +65,7 @@ REGISTER_PLUGIN(versions_players) {
         ctx.write("graph_category version");
 
         for (const auto &pair : map) {
-            auto filtered = filterVersion(pair.first);
+            auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
         }
@@ -85,7 +73,7 @@ REGISTER_PLUGIN(versions_players) {
 
     if (ctx.isFetch()) {
         for (const auto &pair : map) {
-            auto filtered = filterVersion(pair.first);
+            auto filtered = filterKey(pair.first);
             ctx.writef("%s.value %d", filtered.c_str(), pair.second);
         }
     }
