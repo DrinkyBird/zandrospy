@@ -115,9 +115,9 @@ void MuninNode::doRead() {
                     if (i < plugins.size() - 1) {
                         ss << " ";
                     }
-
-                    send(ss.str());
                 }
+
+                send(ss.str());
             }
             else if (words[0] == "config") {
                 std::string wanted;
