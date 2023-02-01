@@ -465,6 +465,24 @@ int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origi
     else if (addr == "134.195.14.136") {
         return ServerChain_FAP;
     }
+    else if (addr == "162.248.95.73") {
+        return ServerChain_Rampage;
+    }
+    else if (addr == "185.150.189.56") {
+        return ServerChain_DemonCrusher;
+    }
+    else if (addr == "192.155.90.89") {
+        return ServerChain_IFOC;
+    }
+    else if (addr == "69.195.128.234") {
+        return ServerChain_Dogsoft;
+    }
+    else if (addr == "79.174.15.140") {
+        return ServerChain_IDDQD;
+    }
+    else if (addr == "81.162.236.129") {
+        return ServerChain_Ninferno;
+    }
 
     return ServerChain_Other;
 }

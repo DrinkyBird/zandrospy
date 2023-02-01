@@ -11,15 +11,27 @@ enum {
     ServerChain_Euroboros,
     ServerChain_DUD,
     ServerChain_FAP,
+    ServerChain_IDDQD,
+    ServerChain_Ninferno,
+    ServerChain_Dogsoft,
+    ServerChain_IFOC,
+    ServerChain_DemonCrusher,
+    ServerChain_Rampage,
 };
 
 static std::unordered_map<int, std::string> SERVER_CHAIN_MAP = {
-    { ServerChain_Other, "Other" },
-    { ServerChain_BlueFirestick, "Blue Firestick" },
-    { ServerChain_TSPG, "The Sentinel's Playground" },
-    { ServerChain_Euroboros, "Euroboros" },
-    { ServerChain_DUD, "Down Under Doomers" },
-    { ServerChain_FAP, "FAP" },
+    { ServerChain_Other,                    "Other" },
+    { ServerChain_BlueFirestick,            "Blue Firestick" },
+    { ServerChain_TSPG,                     "The Sentinel's Playground" },
+    { ServerChain_Euroboros,                "Euroboros" },
+    { ServerChain_DUD,                      "Down Under Doomers" },
+    { ServerChain_FAP,                      "FAP" },
+    { ServerChain_IDDQD,                    "iddqd" },
+    { ServerChain_Ninferno,                 "Ninferno" },
+    { ServerChain_Dogsoft,                  "Dogsoft" },
+    { ServerChain_IFOC,                     "IFOC" },
+    { ServerChain_DemonCrusher,             "The Demon Crusher" },
+    { ServerChain_Rampage,                  "NY Rampage" },
 };
 
 struct ZanPWAD {
