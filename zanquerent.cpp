@@ -69,7 +69,6 @@ void ZanQuerent::queryMaster() {
         socket_perror("sendto");
         return;
     }
-
 }
 
 std::string ZanQuerent::makeServerId(const sockaddr_in &origin) {
@@ -97,13 +96,8 @@ void ZanQuerent::receive() {
         }
         return;
     }
-    //printf("Recv %d from %s:%d\n", r, inet_ntoa(origin_addr.sin_addr), ntohs(origin_addr.sin_port));
     x.resize(r);
     x.dehuffmanify();
-
-    char fn[512];
-    snprintf(fn, 512, "spam/data.%s.%d.bin", inet_ntoa(origin_addr.sin_addr), ntohs(origin_addr.sin_port));
-    x.save(fn);
 
     if (memcmp(&origin_addr.sin_addr, &masterAddr, masterAddrLen) == 0 && origin_addr.sin_port == htons(MASTER_PORT)) {
         handleMasterResponse(x);
@@ -115,7 +109,6 @@ void ZanQuerent::receive() {
 void ZanQuerent::handleMasterResponse(Buffer &buffer) {
     while (buffer.tell() < buffer.getLength()) {
         auto response = buffer.read<uint32_t>();
-        printf("%d\n", response);
 
         switch (response) {
             case MSC_IPISBANNED: {
@@ -136,7 +129,6 @@ void ZanQuerent::handleMasterResponse(Buffer &buffer) {
             case MSC_BEGINSERVERLISTPART: {
                 auto packet = buffer.read<uint8_t>();
                 auto marker = buffer.read<uint8_t>();
-                printf("marker = %d\n" ,marker);
 
                 if (marker == MSC_SERVERBLOCK) {
                     while (true) {
@@ -150,11 +142,8 @@ void ZanQuerent::handleMasterResponse(Buffer &buffer) {
                         addr.sin_family = AF_INET;
                         addr.sin_addr.s_addr = buffer.read<uint32_t>();
 
-                        printf("%s\n", inet_ntoa(addr.sin_addr));
-
                         for (int i = 0; i < num; i++) {
                             addr.sin_port = htons(buffer.read<uint16_t>());
-                            printf("    : %d\n", ntohs(addr.sin_port));
                             serverAddresses.emplace_back(addr);
                             queryQueue.push(addr);
                         }
@@ -196,7 +185,6 @@ void ZanQuerent::workQueryQueue() {
     ZanServer server;
     stagingData[id] = server;
 
-    printf("Querying: %s:%d\n", inet_ntoa(front.sin_addr), ntohs(front.sin_port));
     int r = sendto(socket, (const char *)queryBuf.getData(), (int)queryBuf.getLength(), 0, (const sockaddr *)&front, sizeof(front));
     if (r == SOCKET_ERROR) {
         socket_perror("sendto");
@@ -226,17 +214,13 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     server.response = buffer.read<int32_t>();
     auto pingTime = buffer.read<uint32_t>();
 
-    printf("Response from %s:%d %s\n", inet_ntoa(origin.sin_addr), ntohs(origin.sin_port), id.c_str());
-
     if (server.response != 5660023) {
         switch (server.response) {
             case 5660024: {
-                printf("Server ignored us for spamming\n");
                 break;
             }
 
             case 5660025: {
-                printf("Server banned us\n");
                 break;
             }
         }
@@ -247,9 +231,6 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     server.version = buffer.readString();
     server.flags = buffer.read<uint32_t>();
     int numPlayers = 0;
-
-    printf("    Version: %s\n", server.version.c_str());
-    printf("    Flags: %08x\n", server.flags);
 
     if (server.flags & SQF_NAME) {
         server.name = buffer.readString();
