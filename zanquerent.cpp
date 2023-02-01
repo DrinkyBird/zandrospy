@@ -10,6 +10,10 @@
 
 static constexpr uint16_t MASTER_PORT = 15300;
 
+static constexpr uint32_t QUERY_1 = SQF_PWADS|SQF_GAMETYPE|SQF_IWAD|SQF_NUMPLAYERS|SQF_PLAYERDATA|SQF_TEAMINFO_NUMBER|SQF_TESTING_SERVER|SQF_EXTENDED_INFO;
+
+static constexpr uint32_t QUERY_2 = SQF2_COUNTRY;
+
 ZanQuerent::ZanQuerent(App *app) :
     app(app),
     socket(INVALID_SOCKET), lastQueryTime(0) {
@@ -177,9 +181,9 @@ void ZanQuerent::workQueryQueue() {
 
     Buffer queryBuf(16);
     queryBuf.write<uint32_t>(199);
-    queryBuf.write<uint32_t>(SQF_ALL);
-    queryBuf.write<uint32_t>(0);
-    queryBuf.write<uint32_t>(SQF2_ALL);
+    queryBuf.write<uint32_t>(QUERY_1);
+    queryBuf.write<uint32_t>(time(nullptr));
+    queryBuf.write<uint32_t>(QUERY_2);
     queryBuf.huffmanify();
 
     auto front = queryQueue.front();
