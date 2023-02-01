@@ -148,14 +148,7 @@ void ZanQuerent::handleMasterResponse(Buffer &buffer) {
 
                         sockaddr_in addr{};
                         addr.sin_family = AF_INET;
-#ifdef _WIN32
-                        addr.sin_addr.S_un.S_un_b.s_b1 = buffer.read<uint8_t>();
-                        addr.sin_addr.S_un.S_un_b.s_b2 = buffer.read<uint8_t>();
-                        addr.sin_addr.S_un.S_un_b.s_b3 = buffer.read<uint8_t>();
-                        addr.sin_addr.S_un.S_un_b.s_b4 = buffer.read<uint8_t>();
-#else
                         addr.sin_addr.s_addr = buffer.read<uint32_t>();
-#endif
 
                         printf("%s\n", inet_ntoa(addr.sin_addr));
 
