@@ -35,7 +35,7 @@ REGISTER_PLUGIN(versions_servers) {
 
     if (ctx.isConfig()) {
         ctx.write("graph_title Versions by server count");
-        ctx.write("graph_category players");
+        ctx.write("graph_category version");
 
         for (const auto &pair : map) {
             auto filtered = filterVersion(pair.first);
@@ -74,7 +74,7 @@ REGISTER_PLUGIN(versions_players) {
 
     if (ctx.isConfig()) {
         ctx.write("graph_title Versions by player count");
-        ctx.write("graph_category players");
+        ctx.write("graph_category version");
 
         for (const auto &pair : map) {
             auto filtered = filterVersion(pair.first);
