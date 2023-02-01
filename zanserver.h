@@ -2,6 +2,25 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <unordered_map>
+
+enum {
+    ServerChain_Other,
+    ServerChain_BlueFirestick,
+    ServerChain_TSPG,
+    ServerChain_Euroboros,
+    ServerChain_DUD,
+    ServerChain_FAP,
+};
+
+static std::unordered_map<int, std::string> SERVER_CHAIN_MAP = {
+    { ServerChain_Other, "Other" },
+    { ServerChain_BlueFirestick, "Blue Firestick" },
+    { ServerChain_TSPG, "The Sentinel's Playground" },
+    { ServerChain_Euroboros, "Euroboros" },
+    { ServerChain_DUD, "Down Under Doomers" },
+    { ServerChain_FAP, "FAP" },
+};
 
 struct ZanPWAD {
     ZanPWAD() : isOptional(false) {}
@@ -33,7 +52,7 @@ struct ZanTeam {
 
 struct ZanServer {
     ZanServer() :
-        response(-1), flags(0), flags2(0),
+        response(-1), serverChain(ServerChain_Other), flags(0), flags2(0),
         maxClients(0), maxPlayers(0), pwads(),
         gamemode(0), instagib(false), buckshot(false),
         forcePassword(false), forceJoinPassword(false),
@@ -44,6 +63,7 @@ struct ZanServer {
 
     int32_t response;
     [[nodiscard]] constexpr inline bool success() const { return response == 5660023; }
+    int serverChain;
 
     std::string version;
 

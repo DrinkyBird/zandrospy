@@ -27,6 +27,7 @@ private:
     void receive();
     void handleMasterResponse(Buffer &buffer);
     void handleServerResponse(Buffer &buffer, const sockaddr_in &origin);
+    int determineServerChain(ZanServer &server, const sockaddr_in &origin);
 
     App *app;
 

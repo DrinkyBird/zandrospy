@@ -22,3 +22,34 @@ REGISTER_PLUGIN(players) {
         ctx.writef("players.value %d", num);
     }
 }
+
+REGISTER_PLUGIN(players_chain) {
+    std::unordered_map<int, int> map;
+    for (const auto &pair : SERVER_CHAIN_MAP) {
+        map[pair.first] = 0;
+    }
+
+    ctx.lockServerData();
+    for (const auto &pair : ctx.getServerData()) {
+        const auto &server = pair.second;
+        map[server.serverChain] += server.numHumanPlayers;
+    }
+    ctx.unlockServerData();
+
+    if (ctx.isConfig()) {
+        ctx.write("graph_title Players by server chain");
+        ctx.write("graph_category players");
+
+        for (const auto &pair : map) {
+            ctx.writef("%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
+            ctx.writef("%d.min 0", pair.first);
+            ctx.writef("%d.draw AREASTACK", pair.first);
+        }
+    }
+
+    if (ctx.isFetch()) {
+        for (const auto &pair : map) {
+            ctx.writef("%d.value %d", pair.first, pair.second);
+        }
+    }
+}

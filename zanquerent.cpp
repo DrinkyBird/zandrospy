@@ -443,4 +443,28 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
             server.country += buffer.read<char>();
         }
     }
+
+    server.serverChain = determineServerChain(server, origin);
+}
+
+int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origin) {
+    std::string addr = inet_ntoa(origin.sin_addr);
+
+    if (addr == "104.128.58.120") {
+        return ServerChain_TSPG;
+    }
+    else if (addr == "103.25.59.27") {
+        return ServerChain_DUD;
+    }
+    else if (addr == "54.36.165.167") {
+        return ServerChain_BlueFirestick;
+    }
+    else if (addr == "142.132.155.163") {
+        return ServerChain_Euroboros;
+    }
+    else if (addr == "134.195.14.136") {
+        return ServerChain_FAP;
+    }
+
+    return ServerChain_Other;
 }
