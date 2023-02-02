@@ -88,15 +88,15 @@ REGISTER_PLUGIN(servers_chain) {
         ctx.write("graph_category servers");
 
         for (const auto &pair : map) {
-            ctx.writef("%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
-            ctx.writef("%d.min 0", pair.first);
-            ctx.writef("%d.draw AREASTACK", pair.first);
+            ctx.writef("c%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
+            ctx.writef("c%d.min 0", pair.first);
+            ctx.writef("c%d.draw AREASTACK", pair.first);
         }
     }
 
     if (ctx.isFetch()) {
         for (const auto &pair : map) {
-            ctx.writef("%d.value %d", pair.first, pair.second);
+            ctx.writef("c%d.value %d", pair.first, pair.second);
         }
     }
 }
