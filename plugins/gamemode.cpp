@@ -32,6 +32,7 @@ REGISTER_PLUGIN(gamemodes_servers) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Game modes by server count");
         ctx.write("graph_category gamemode");
+        ctx.write("graph_vlabel Servers");
 
         for (const auto &pair : map) {
             ctx.writef("gm%d.label %s", pair.first, GAMEMODE_NAMES[pair.first]);
@@ -67,6 +68,7 @@ REGISTER_PLUGIN(gamemodes_players) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Game modes by player count");
         ctx.write("graph_category gamemode");
+        ctx.write("graph_vlabel Players");
 
         for (const auto &pair : map) {
             ctx.writef("gm%d.label %s", pair.first, GAMEMODE_NAMES[pair.first]);

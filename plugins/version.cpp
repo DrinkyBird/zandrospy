@@ -25,6 +25,7 @@ REGISTER_PLUGIN(versions_servers) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Versions by server count");
         ctx.write("graph_category version");
+        ctx.write("graph_vlabel Servers");
 
         for (const auto &pair : map) {
             auto filtered = filterKey(pair.first);
@@ -65,6 +66,7 @@ REGISTER_PLUGIN(versions_players) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Versions by player count");
         ctx.write("graph_category version");
+        ctx.write("graph_vlabel Players");
 
         for (const auto &pair : map) {
             auto filtered = filterKey(pair.first);
@@ -106,6 +108,7 @@ REGISTER_PLUGIN(platforms_servers) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Platforms by server count");
         ctx.write("graph_category version");
+        ctx.write("graph_vlabel Servers");
 
         for (const auto &pair : map) {
             auto filtered = filterKey(pair.first);

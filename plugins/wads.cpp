@@ -24,6 +24,7 @@ REGISTER_PLUGIN(iwads_servers) {
 
         ctx.write("graph_title IWADs by server count");
         ctx.write("graph_category wads");
+        ctx.write("graph_vlabel Servers");
 
         for (const auto &pair : map) {
             auto filtered = filterKey(pair.first);
@@ -62,6 +63,7 @@ REGISTER_PLUGIN(iwads_players) {
     if (ctx.isConfig()) {
         ctx.write("graph_title IWADs by player count");
         ctx.write("graph_category wads");
+        ctx.write("graph_vlabel Players");
 
         for (const auto &pair : map) {
             auto filtered = filterKey(pair.first);
@@ -109,6 +111,7 @@ REGISTER_PLUGIN(pwads_servers) {
     if (ctx.isConfig()) {
         ctx.write("graph_title PWADs by server count");
         ctx.write("graph_category wads");
+        ctx.write("graph_vlabel Servers");
 
         for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);
@@ -155,6 +158,7 @@ REGISTER_PLUGIN(pwads_players) {
     if (ctx.isConfig()) {
         ctx.write("graph_title PWADs by player count");
         ctx.write("graph_category wads");
+        ctx.write("graph_vlabel Players");
 
         for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);

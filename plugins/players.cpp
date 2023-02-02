@@ -5,6 +5,7 @@ REGISTER_PLUGIN(players) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Total players");
         ctx.write("graph_category players");
+        ctx.write("graph_vlabel Players");
         ctx.write("players.label Players");
         ctx.write("players.min 0");
     }
@@ -34,6 +35,7 @@ REGISTER_PLUGIN(players_state) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Total players by state");
         ctx.write("graph_category players");
+        ctx.write("graph_vlabel Players");
         for (const auto &pair : map) {
             const std::string key = lowercase(pair.first);
             ctx.writef("%s.label %s", key.c_str(), pair.first.c_str());
@@ -82,6 +84,7 @@ REGISTER_PLUGIN(players_chain) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Players by server chain");
         ctx.write("graph_category players");
+        ctx.write("graph_vlabel Players");
 
         for (const auto &pair : map) {
             ctx.writef("c%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());

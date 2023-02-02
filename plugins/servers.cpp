@@ -5,6 +5,7 @@ REGISTER_PLUGIN(servers) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Total servers");
         ctx.write("graph_category servers");
+        ctx.write("graph_vlabel Servers");
         ctx.write("servers.label Servers");
         ctx.write("servers.min 0");
     }
@@ -51,6 +52,7 @@ REGISTER_PLUGIN(servers_response) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Server responses");
         ctx.write("graph_category servers");
+        ctx.write("graph_vlabel Servers");
 
         for (const auto &pair : map) {
             if (RESPONSE_MAP.count(pair.first)) {
@@ -86,6 +88,7 @@ REGISTER_PLUGIN(servers_chain) {
     if (ctx.isConfig()) {
         ctx.write("graph_title Servers by server chain");
         ctx.write("graph_category servers");
+        ctx.write("graph_vlabel Servers");
 
         for (const auto &pair : map) {
             ctx.writef("c%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
