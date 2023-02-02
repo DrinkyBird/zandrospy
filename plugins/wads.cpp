@@ -21,6 +21,7 @@ REGISTER_PLUGIN(iwads_servers) {
     ctx.unlockServerData();
 
     if (ctx.isConfig()) {
+
         ctx.write("graph_title IWADs by server count");
         ctx.write("graph_category wads");
 
@@ -80,6 +81,7 @@ REGISTER_PLUGIN(iwads_players) {
 
 REGISTER_PLUGIN(pwads_servers) {
     std::map<std::string, int> map;
+    std::vector<std::pair<std::string, int>> sorted;
 
     ctx.lockServerData();
     for (const auto &pair : ctx.getServerData()) {
@@ -98,11 +100,17 @@ REGISTER_PLUGIN(pwads_servers) {
     }
     ctx.unlockServerData();
 
+    for (const auto &pair : map) {
+        sorted.emplace_back(pair);
+    }
+
+    std::sort(sorted.begin(), sorted.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
+
     if (ctx.isConfig()) {
         ctx.write("graph_title PWADs by server count");
         ctx.write("graph_category wads");
 
-        for (const auto &pair : map) {
+        for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
@@ -110,7 +118,7 @@ REGISTER_PLUGIN(pwads_servers) {
     }
 
     if (ctx.isFetch()) {
-        for (const auto &pair : map) {
+        for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.value %d", filtered.c_str(), pair.second);
         }
@@ -119,6 +127,7 @@ REGISTER_PLUGIN(pwads_servers) {
 
 REGISTER_PLUGIN(pwads_players) {
     std::map<std::string, int> map;
+    std::vector<std::pair<std::string, int>> sorted;
 
     ctx.lockServerData();
     for (const auto &pair : ctx.getServerData()) {
@@ -137,11 +146,17 @@ REGISTER_PLUGIN(pwads_players) {
     }
     ctx.unlockServerData();
 
+    for (const auto &pair : map) {
+        sorted.emplace_back(pair);
+    }
+
+    std::sort(sorted.begin(), sorted.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
+
     if (ctx.isConfig()) {
         ctx.write("graph_title PWADs by player count");
         ctx.write("graph_category wads");
 
-        for (const auto &pair : map) {
+        for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
@@ -149,7 +164,7 @@ REGISTER_PLUGIN(pwads_players) {
     }
 
     if (ctx.isFetch()) {
-        for (const auto &pair : map) {
+        for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.value %d", filtered.c_str(), pair.second);
         }
