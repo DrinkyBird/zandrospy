@@ -64,6 +64,7 @@ void MuninNode::acceptClient() {
 
     auto *ip = (unsigned char *)&sin->sin_addr.s_addr;
     printf("Incoming connection from: %d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
+    useDirtyConfig = false;
     send("# munin node at zandronum");
 }
 
