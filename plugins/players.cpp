@@ -1,4 +1,5 @@
 #include "muninregistration.h"
+#include "util.h"
 
 REGISTER_PLUGIN(players) {
     if (ctx.isConfig()) {
@@ -20,6 +21,48 @@ REGISTER_PLUGIN(players) {
         ctx.unlockServerData();
 
         ctx.writef("players.value %d", num);
+    }
+}
+
+REGISTER_PLUGIN(players_state) {
+    std::unordered_map<std::string, int> map = {
+        { "In-Game", 0 },
+        { "Spectator", 0 },
+        { "Bot", 0 }
+    };
+
+    if (ctx.isConfig()) {
+        ctx.write("graph_title Total players by state");
+        ctx.write("graph_category players");
+        for (const auto &pair : map) {
+            const std::string key = lowercase(pair.first);
+            ctx.writef("%s.label %s", key.c_str(), pair.first.c_str());
+            ctx.writef("%s.min 0", key.c_str());
+            ctx.writef("%s.draw AREASTACK", key.c_str());
+        }
+    }
+
+    if (ctx.isFetch()) {
+        ctx.lockServerData();
+        for (const auto &pair : ctx.getServerData()) {
+            if (pair.second.success()) {
+                for (const auto &player : pair.second.players) {
+                    if (player.bot) {
+                        map["Bot"]++;
+                    } else if (player.spectator) {
+                        map["Spectator"]++;
+                    } else {
+                        map["In-Game"]++;
+                    }
+                }
+            }
+        }
+        ctx.unlockServerData();
+
+        for (const auto &pair : map) {
+            const std::string key = lowercase(pair.first);
+            ctx.writef("%s.value %d", key.c_str(), pair.second);
+        }
     }
 }
 
