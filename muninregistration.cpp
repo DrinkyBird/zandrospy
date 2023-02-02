@@ -1,5 +1,4 @@
 #include <pthread.h>
-#include <cstdarg>
 #include "muninregistration.h"
 #include "main.h"
 #include "muninnode.h"
@@ -31,18 +30,6 @@ ExecutionContext::~ExecutionContext() = default;
 
 void ExecutionContext::write(const std::string &line) {
     node->send(line);
-}
-
-void ExecutionContext::writef(const char *fmt, ...) {
-    constexpr size_t bufSize = 512;
-    char buffer[bufSize];
-
-    va_list args;
-    va_start(args, fmt);
-    vsnprintf(buffer, bufSize, fmt, args);
-    va_end(args);
-
-    write(buffer);
 }
 
 const std::unordered_map<std::string, ZanServer> &ExecutionContext::getServerData() const {

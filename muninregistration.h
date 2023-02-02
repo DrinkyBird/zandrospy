@@ -2,6 +2,7 @@
 #include <functional>
 #include <unordered_map>
 #include <string>
+#include <cstdarg>
 #include "zanserver.h"
 
 class App;
@@ -35,7 +36,18 @@ public:
     ~ExecutionContext();
 
     void write(const std::string &line);
-    void writef(const char *fmt, ...);
+
+    template<size_t bufSize = 256>
+    void writef(const char *fmt, ...) {
+        char buffer[bufSize];
+
+        va_list args;
+        va_start(args, fmt);
+        vsnprintf(buffer, bufSize, fmt, args);
+        va_end(args);
+
+        write(buffer);
+    }
 
     [[nodiscard]] const std::unordered_map<std::string, ZanServer> &getServerData() const;
     void lockServerData();

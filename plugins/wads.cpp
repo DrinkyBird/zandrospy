@@ -108,10 +108,20 @@ REGISTER_PLUGIN(pwads_servers) {
 
     std::sort(sorted.begin(), sorted.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
 
+    std::string order;
+    {
+        std::stringstream ss;
+        for (const auto &pair : sorted) {
+            ss << pair.first << " ";
+        }
+        order = ss.str();
+    }
+
     if (ctx.isConfig()) {
         ctx.write("graph_title PWADs by server count");
         ctx.write("graph_category wads");
         ctx.write("graph_vlabel Servers");
+        ctx.writef<32 * 1024>("graph_order %s", order.c_str());
 
         for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);
@@ -155,10 +165,20 @@ REGISTER_PLUGIN(pwads_players) {
 
     std::sort(sorted.begin(), sorted.end(), [](const auto &a, const auto &b) { return a.second > b.second; });
 
+    std::string order;
+    {
+        std::stringstream ss;
+        for (const auto &pair : sorted) {
+            ss << pair.first << " ";
+        }
+        order = ss.str();
+    }
+
     if (ctx.isConfig()) {
         ctx.write("graph_title PWADs by player count");
         ctx.write("graph_category wads");
         ctx.write("graph_vlabel Players");
+        ctx.writef<32 * 1024>("graph_order %s", order.c_str());
 
         for (const auto &pair : sorted) {
             auto filtered = filterKey(pair.first);
