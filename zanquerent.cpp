@@ -353,12 +353,12 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
 
             if (!player.bot) {
                 server.numHumanPlayers++;
-            }
 
-            if (player.spectator) {
-                server.numSpectators++;
-            } else {
-                server.numInGamePlayers++;
+                if (player.spectator) {
+                    server.numSpectators++;
+                } else {
+                    server.numInGamePlayers++;
+                }
             }
         }
     }

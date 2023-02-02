@@ -20,6 +20,7 @@ add_executable(zandrospy
     zanquerent.h
     zanserver.h
 
+    plugins/gamemode.cpp
     plugins/players.cpp
     plugins/servers.cpp
     plugins/version.cpp
