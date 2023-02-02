@@ -106,7 +106,6 @@ REGISTER_PLUGIN(pwads_servers) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
-            ctx.writef("%s.draw AREASTACK", filtered.c_str());
         }
     }
 
@@ -146,7 +145,6 @@ REGISTER_PLUGIN(pwads_players) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
-            ctx.writef("%s.draw AREASTACK", filtered.c_str());
         }
     }
 
