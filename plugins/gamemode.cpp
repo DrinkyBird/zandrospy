@@ -17,7 +17,7 @@ static constexpr const char *GAMEMODE_NAMES[GAMEMODE_COUNT] = {
     "Possession",
     "Team Possession",
     "Team Game",
-    "CTF",
+    "Capture the Flag",
     "One-Flag CTF",
     "Skulltag",
     "Domination"
