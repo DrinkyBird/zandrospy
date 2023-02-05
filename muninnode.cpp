@@ -42,6 +42,10 @@ MuninNode::MuninNode(App *app) :
     printf("Munin node is now listening.\n");
 }
 
+MuninNode::~MuninNode() {
+    closesocket(server);
+}
+
 void MuninNode::run() {
     if (client == INVALID_SOCKET) {
         acceptClient();
@@ -65,6 +69,7 @@ void MuninNode::acceptClient() {
     auto *ip = (unsigned char *)&sin->sin_addr.s_addr;
     printf("Incoming connection from: %d.%d.%d.%d\n", ip[0], ip[1], ip[2], ip[3]);
     useDirtyConfig = false;
+    connectionStartTime = MeasureClock::now();
     send("# munin node at zandronum");
 }
 
@@ -76,8 +81,7 @@ void MuninNode::doRead() {
     int len = recv(client, buffer, bufferSize, 0);
     if (len < 1) {
         socket_perror("recv");
-        closesocket(client);
-        client = INVALID_SOCKET;
+        endConnection();
         return;
     } else {
         std::string data(buffer);
@@ -154,8 +158,7 @@ void MuninNode::doRead() {
                 send(".");
             }
             else if (words[0] == "quit" || words[0] == ".") {
-                closesocket(client);
-                client = INVALID_SOCKET;
+                endConnection();
                 return;
             }
             else {
@@ -173,6 +176,12 @@ void MuninNode::send(const std::string &line) {
     }
 }
 
-MuninNode::~MuninNode() {
-    closesocket(server);
+void MuninNode::endConnection() {
+    lastConnectionTime = toSeconds<MeasureClock>(MeasureClock::now() - connectionStartTime);
+    closesocket(client);
+    client = INVALID_SOCKET;
+}
+
+double MuninNode::getLastConnectionTime() const {
+    return lastConnectionTime;
 }

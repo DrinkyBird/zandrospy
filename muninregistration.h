@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdarg>
 #include "zanserver.h"
+#include "querystats.h"
 
 class App;
 class MuninNode;
@@ -53,8 +54,14 @@ public:
     void lockServerData();
     void unlockServerData();
 
-    inline bool isConfig() const { return config; }
-    inline bool isFetch() const { return fetch; }
+    [[nodiscard]] const QueryStats &getQueryStats() const;
+    void lockQueryStats();
+    void unlockQueryStats();
+
+    [[nodiscard]] MuninNode *getNode() const;
+
+    [[nodiscard]] inline bool isConfig() const { return config; }
+    [[nodiscard]] inline bool isFetch() const { return fetch; }
 
 private:
     App *app;

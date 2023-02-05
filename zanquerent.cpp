@@ -66,12 +66,16 @@ void ZanQuerent::queryMaster() {
     queryQueue = {};
     serverAddresses.clear();
     stagingData.clear();
+    stagingStats = {};
+    queryStartTime = MeasureClock::now();
 
     r = sendto(socket, (const char *)buffer.getData(), (int)buffer.getLength(), 0, (const sockaddr *)&master_addr, sizeof(master_addr));
     if (r == SOCKET_ERROR) {
         socket_perror("sendto");
         return;
     }
+
+    stagingStats.masterTrafficOut += buffer.getLength();
 }
 
 std::string ZanQuerent::makeServerId(const sockaddr_in &origin) {
@@ -108,8 +112,10 @@ void ZanQuerent::receive() {
     x.dehuffmanify();
 
     if (memcmp(&origin_addr.sin_addr, &masterAddr, masterAddrLen) == 0 && origin_addr.sin_port == htons(MASTER_PORT)) {
+        stagingStats.masterTrafficIn += x.getLength();
         handleMasterResponse(x);
     } else {
+        stagingStats.queryTrafficIn += x.getLength();
         handleServerResponse(x, origin_addr);
     }
 }
@@ -199,13 +205,22 @@ void ZanQuerent::workQueryQueue() {
         return;
     }
 
+    stagingStats.queryTrafficOut += queryBuf.getLength();
+
     if (queryQueue.empty() && !stagingData.empty()) {
+        stagingStats.queryTime = toSeconds<MeasureClock>(MeasureClock::now() - queryStartTime);
+
         pthread_mutex_lock(&app->serverDataMutex);
         app->serverData.clear();
         for (const auto &pair : stagingData) {
             app->serverData[pair.first] = pair.second;
         }
         pthread_mutex_unlock(&app->serverDataMutex);
+
+        pthread_mutex_lock(&app->queryStatsMutex);
+        app->queryStats = stagingStats;
+        pthread_mutex_unlock(&app->queryStatsMutex);
+
         printf("Refresh completed, data swapped.\n");
         stagingData.clear();
     }
@@ -223,17 +238,7 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     server.response = buffer.read<int32_t>();
     auto pingTime = buffer.read<uint32_t>();
 
-    if (server.response != 5660023) {
-        switch (server.response) {
-            case 5660024: {
-                break;
-            }
-
-            case 5660025: {
-                break;
-            }
-        }
-
+    if (server.response != SERVER_LAUNCHER_CHALLENGE) {
         return;
     }
 

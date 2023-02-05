@@ -44,6 +44,22 @@ void ExecutionContext::unlockServerData() {
     pthread_mutex_unlock(&app->serverDataMutex);
 }
 
+const QueryStats &ExecutionContext::getQueryStats() const {
+    return app->queryStats;
+}
+
+void ExecutionContext::lockQueryStats() {
+    pthread_mutex_lock(&app->queryStatsMutex);
+}
+
+void ExecutionContext::unlockQueryStats() {
+    pthread_mutex_unlock(&app->queryStatsMutex);
+}
+
+MuninNode *ExecutionContext::getNode() const {
+    return node;
+}
+
 MuninPlugin *MuninPlugin::findByName(const std::string &name) {
     for (MuninPlugin *plugin = first; plugin != nullptr; plugin = plugin->next) {
         if (plugin->getName() == name) {

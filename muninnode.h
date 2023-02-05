@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
-
 #include "socket.h"
+#include "util.h"
 
 class App;
 
@@ -15,8 +15,11 @@ public:
 
     void send(const std::string &line);
 
+    double getLastConnectionTime() const;
+
 private:
     void acceptClient();
+    void endConnection();
 
     App *app;
 
@@ -24,4 +27,6 @@ private:
     SOCKET client;
 
     bool useDirtyConfig;
+    double lastConnectionTime;
+    MeasureClock::time_point connectionStartTime;
 };

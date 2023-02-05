@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "muninregistration.h"
 #include "zanserver.h"
+#include "querystats.h"
 
 class App {
 public:
@@ -15,6 +16,8 @@ public:
 
     mutable pthread_mutex_t serverDataMutex;
     std::unordered_map<std::string, ZanServer> serverData;
+    mutable pthread_mutex_t queryStatsMutex;
+    QueryStats queryStats;
 
 private:
     std::vector<MuninPlugin *> muninPlugins;

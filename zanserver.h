@@ -20,7 +20,7 @@ enum {
 };
 
 static std::unordered_map<int, std::string> SERVER_CHAIN_MAP = {
-    { ServerChain_Other,                    "Other" },
+    { ServerChain_Other,                    "Other / Unaffiliated" },
     { ServerChain_BlueFirestick,            "Blue Firestick" },
     { ServerChain_TSPG,                     "The Sentinel's Playground" },
     { ServerChain_Euroboros,                "Euroboros" },

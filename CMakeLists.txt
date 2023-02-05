@@ -12,6 +12,7 @@ add_executable(zandrospy
     muninnode.h
     muninregistration.cpp
     muninregistration.h
+    querystats.h
     socket.h
     socket.cpp
     util.h
@@ -21,6 +22,7 @@ add_executable(zandrospy
     zanserver.h
 
     plugins/gamemode.cpp
+    plugins/query.cpp
     plugins/players.cpp
     plugins/servers.cpp
     plugins/version.cpp

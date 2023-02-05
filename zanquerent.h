@@ -7,6 +7,8 @@
 #include <ctime>
 #include "socket.h"
 #include "zanserver.h"
+#include "querystats.h"
+#include "util.h"
 
 class App;
 class Buffer;
@@ -39,6 +41,8 @@ private:
     std::queue<sockaddr_in> queryQueue;
 
     std::unordered_map<std::string, ZanServer> stagingData;
+    QueryStats stagingStats;
+    MeasureClock::time_point queryStartTime;
 
     time_t lastQueryTime;
 };

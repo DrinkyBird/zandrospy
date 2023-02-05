@@ -58,9 +58,11 @@ App::App() {
     }
 
     pthread_mutex_init(&serverDataMutex, nullptr);
+    pthread_mutex_init(&queryStatsMutex, nullptr);
 }
 
 App::~App() {
+    pthread_mutex_destroy(&queryStatsMutex);
     pthread_mutex_destroy(&serverDataMutex);
     HUFFMAN_Destruct();
 #ifdef _WIN32

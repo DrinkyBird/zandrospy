@@ -35,13 +35,6 @@
 #define SQF2_PWAD_HASHES			0x00000001
 #define SQF2_COUNTRY				0x00000002
 
-#define	SQF_ALL						( SQF_NAME|SQF_URL|SQF_EMAIL|SQF_MAPNAME|SQF_MAXCLIENTS|SQF_MAXPLAYERS| \
-									  SQF_PWADS|SQF_GAMETYPE|SQF_GAMENAME|SQF_IWAD|SQF_FORCEPASSWORD|SQF_FORCEJOINPASSWORD|SQF_GAMESKILL| \
-									  SQF_BOTSKILL|SQF_DMFLAGS|SQF_LIMITS|SQF_TEAMDAMAGE|SQF_TEAMSCORES|SQF_NUMPLAYERS|SQF_PLAYERDATA|SQF_TEAMINFO_NUMBER|SQF_TEAMINFO_NAME|SQF_TEAMINFO_COLOR|SQF_TEAMINFO_SCORE| \
-									  SQF_TESTING_SERVER|SQF_DATA_MD5SUM|SQF_ALL_DMFLAGS|SQF_SECURITY_SETTINGS|SQF_OPTIONAL_WADS|SQF_DEH|SQF_EXTENDED_INFO )
-
-#define SQF2_ALL					( SQF2_PWAD_HASHES|SQF2_COUNTRY )
-
 enum
 {
     MSC_BEGINSERVERLIST,
@@ -56,18 +49,10 @@ enum
 
 };
 
-//*****************************************************************************
 enum
 {
     // Server is letting master server of its existence.
     SERVER_MASTER_CHALLENGE = 5660020,
-
-    // [RC] This is no longer used.
-    /*
-        // Server is letting master server of its existence, along with sending an IP the master server
-        // should use for this server.
-        SERVER_MASTER_CHALLENGE_OVERRIDE = 5660021,
-    */
 
     // Server is sending some statistics to the master server.
     SERVER_MASTER_STATISTICS = 5660022,
