@@ -80,7 +80,7 @@ REGISTER_PLUGIN(master_traffic) {
         ctx.write("in.label received");
         ctx.write("in.graph no");
         ctx.write("in.min 0");
-        ctx.write("out.label Master server");
+        ctx.write("out.label bytes/sec");
         ctx.write("out.negative in");
         ctx.write("out.min 0");
     }
@@ -107,7 +107,7 @@ REGISTER_PLUGIN(query_traffic) {
         ctx.write("in.label received");
         ctx.write("in.graph no");
         ctx.write("in.min 0");
-        ctx.write("out.label Game servers");
+        ctx.write("out.label bytes/sec");
         ctx.write("out.negative in");
         ctx.write("out.min 0");
     }
@@ -131,7 +131,7 @@ REGISTER_PLUGIN(munin_time) {
         ctx.write("graph_category query");
         ctx.write("graph_vlabel Duration (seconds)");
         ctx.write("time.label Connection duration");
-        ctx.write("time.info Time taken during the last connection from the Munin host. This is always one update behind.");
+        ctx.write("time.info Time taken during the last connection from the Munin host. This is always one update behind, and will be 0 after the node restarts.");
     }
 
     if (ctx.isFetch()) {
