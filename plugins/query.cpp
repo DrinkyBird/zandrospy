@@ -81,7 +81,7 @@ REGISTER_PLUGIN(master_traffic) {
         ctx.write("in.graph no");
         ctx.write("in.min 0");
         ctx.write("out.label Master server");
-        ctx.write("out.negative msin");
+        ctx.write("out.negative in");
         ctx.write("out.min 0");
     }
 
@@ -108,7 +108,7 @@ REGISTER_PLUGIN(query_traffic) {
         ctx.write("in.graph no");
         ctx.write("in.min 0");
         ctx.write("out.label Game servers");
-        ctx.write("out.negative sqin");
+        ctx.write("out.negative in");
         ctx.write("out.min 0");
     }
 
