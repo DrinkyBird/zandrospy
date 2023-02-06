@@ -69,44 +69,57 @@ REGISTER_PLUGIN(query_time) {
     }
 }
 
-REGISTER_PLUGIN(query_traffic) {
+REGISTER_PLUGIN(master_traffic) {
     if (ctx.isConfig()) {
-        ctx.write("graph_title Total query traffic");
-        ctx.write("graph_order msin msout sqin sqout");
+        ctx.write("graph_title Total master server query traffic");
+        ctx.write("graph_order in out");
         ctx.write("graph_args --base 1000");
         ctx.write("graph_vlabel bytes in (-) / out (+) per refresh");
         ctx.write("graph_category query");
-        ctx.write("sqin.label received");
-        ctx.write("sqin.type DERIVE");
-        ctx.write("sqin.graph no");
-        ctx.write("sqin.min 0");
-        ctx.write("sqout.label Game servers");
-        ctx.write("sqout.type DERIVE");
-        ctx.write("sqout.negative sqin");
-        ctx.write("sqout.min 0");
-        ctx.write("msin.label received");
-        ctx.write("msin.type DERIVE");
-        ctx.write("msin.graph no");
-        ctx.write("msin.min 0");
-        ctx.write("msout.label Master server");
-        ctx.write("msout.type DERIVE");
-        ctx.write("msout.negative msin");
-        ctx.write("msout.min 0");
+        ctx.write("in.label received");
+        ctx.write("in.graph no");
+        ctx.write("in.min 0");
+        ctx.write("out.label Master server");
+        ctx.write("out.negative msin");
+        ctx.write("out.min 0");
     }
 
     if (ctx.isFetch()) {
         ctx.lockQueryStats();
         const auto &stats = ctx.getQueryStats();
-        const uint32_t sqin = stats.queryTrafficIn;
-        const uint32_t sqout = stats.queryTrafficOut;
-        const uint32_t msin = stats.masterTrafficIn;
-        const uint32_t msout = stats.masterTrafficOut;
+        const uint32_t in = stats.masterTrafficIn;
+        const uint32_t out = stats.masterTrafficOut;
         ctx.unlockQueryStats();
 
-        ctx.writef("sqin.value %u", sqin);
-        ctx.writef("sqout.value %u", sqout);
-        ctx.writef("msin.value %u", msin);
-        ctx.writef("msout.value %u", msout);
+        ctx.writef("in.value %u", in);
+        ctx.writef("out.value %u", out);
+    }
+}
+
+REGISTER_PLUGIN(query_traffic) {
+    if (ctx.isConfig()) {
+        ctx.write("graph_title Total game server query traffic");
+        ctx.write("graph_order in out");
+        ctx.write("graph_args --base 1000");
+        ctx.write("graph_vlabel bytes in (-) / out (+) per refresh");
+        ctx.write("graph_category query");
+        ctx.write("in.label received");
+        ctx.write("in.graph no");
+        ctx.write("in.min 0");
+        ctx.write("out.label Game servers");
+        ctx.write("out.negative sqin");
+        ctx.write("out.min 0");
+    }
+
+    if (ctx.isFetch()) {
+        ctx.lockQueryStats();
+        const auto &stats = ctx.getQueryStats();
+        const uint32_t in = stats.queryTrafficIn;
+        const uint32_t out = stats.queryTrafficOut;
+        ctx.unlockQueryStats();
+
+        ctx.writef("in.value %u", in);
+        ctx.writef("out.value %u", out);
     }
 }
 
