@@ -3,7 +3,7 @@
 
 struct QueryStats {
     QueryStats() :
-        queryTime(0.0), queryTrafficIn(0), queryTrafficOut(0) { }
+        queryTime(0.0), queryTrafficIn(0), queryTrafficOut(0), masterTrafficIn(0), masterTrafficOut(0) { }
 
     double queryTime;
     uint32_t queryTrafficIn, queryTrafficOut;
