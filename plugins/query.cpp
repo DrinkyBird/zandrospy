@@ -80,7 +80,7 @@ REGISTER_PLUGIN(master_traffic) {
         ctx.write("in.label received");
         ctx.write("in.graph no");
         ctx.write("in.min 0");
-        ctx.write("out.label bytes/sec");
+        ctx.write("out.label bytes");
         ctx.write("out.negative in");
         ctx.write("out.min 0");
     }
@@ -107,7 +107,7 @@ REGISTER_PLUGIN(query_traffic) {
         ctx.write("in.label received");
         ctx.write("in.graph no");
         ctx.write("in.min 0");
-        ctx.write("out.label bytes/sec");
+        ctx.write("out.label bytes");
         ctx.write("out.negative in");
         ctx.write("out.min 0");
     }
