@@ -131,6 +131,7 @@ REGISTER_PLUGIN(munin_time) {
         ctx.write("graph_category query");
         ctx.write("graph_vlabel Duration (seconds)");
         ctx.write("time.label Connection duration");
+        ctx.write("time.info Time taken during the last connection from the Munin host. This is always one update behind.");
     }
 
     if (ctx.isFetch()) {
