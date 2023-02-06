@@ -102,8 +102,9 @@ void ZanQuerent::receive() {
     socklen_t origin_len = sizeof(origin_addr);
     Buffer x(4096);
     int r = recvfrom(socket, (char *)x.getData(), (int)x.getLength(), 0, (sockaddr *)&origin_addr, &origin_len);
-    if (r == SOCKET_ERROR) {
-        if (socket_error() != WSAETIMEDOUT) {
+    if (r == SOCKET_ERROR ) {
+        int err = socket_error();
+        if (err != WSAETIMEDOUT && err != EAGAIN && err != EWOULDBLOCK) {
             socket_perror("recvfrom");
         }
         return;
