@@ -10,8 +10,13 @@ static std::map<int32_t, std::pair<std::string, std::string>> RESPONSE_MAP = {
     { -1, { "Timed out", "The request was not responded to in time or another error occurred" } }
 };
 
+static inline void push(const std::unordered_map<int32_t, int> &map, std::vector<std::pair<int32_t, int>> &vec, const int32_t &key) {
+    std::pair<int32_t, int> pair{key, map.at(key)};
+    vec.emplace_back(pair);
+}
+
 REGISTER_PLUGIN(servers_response) {
-    std::map<int32_t, int> map;
+    std::unordered_map<int32_t, int> map;
     for (const auto &pair : RESPONSE_MAP) {
         map[pair.first] = 0;
     }
@@ -27,12 +32,18 @@ REGISTER_PLUGIN(servers_response) {
     }
     ctx.unlockServerData();
 
+    std::vector<std::pair<int32_t, int>> ordered;
+    push(map, ordered, SERVER_LAUNCHER_CHALLENGE);
+    push(map, ordered, SERVER_LAUNCHER_IGNORING);
+    push(map, ordered, SERVER_LAUNCHER_BANNED);
+    push(map, ordered, -1);
+
     if (ctx.isConfig()) {
         ctx.write("graph_title Server responses");
         ctx.write("graph_category query");
         ctx.write("graph_vlabel Servers");
 
-        for (const auto &pair : map) {
+        for (const auto &pair : ordered) {
             if (RESPONSE_MAP.count(pair.first)) {
                 ctx.writef("%d.label %s", pair.first, RESPONSE_MAP[pair.first].first.c_str());
                 ctx.writef("%d.info %s", pair.first, RESPONSE_MAP[pair.first].second.c_str());
@@ -45,7 +56,7 @@ REGISTER_PLUGIN(servers_response) {
     }
 
     if (ctx.isFetch()) {
-        for (const auto &pair : map) {
+        for (const auto &pair : ordered) {
             ctx.writef("%d.value %d", pair.first, pair.second);
         }
     }
