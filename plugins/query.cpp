@@ -11,7 +11,7 @@ static std::map<int32_t, std::pair<std::string, std::string>> RESPONSE_MAP = {
 };
 
 REGISTER_PLUGIN(servers_response) {
-    std::unordered_map<int32_t, int> map;
+    std::map<int32_t, int> map;
     for (const auto &pair : RESPONSE_MAP) {
         map[pair.first] = 0;
     }
@@ -29,7 +29,6 @@ REGISTER_PLUGIN(servers_response) {
 
     if (ctx.isConfig()) {
         ctx.write("graph_title Server responses");
-        ctx.writef("graph_order %d %d %d %d", SERVER_LAUNCHER_CHALLENGE, SERVER_LAUNCHER_IGNORING, SERVER_LAUNCHER_BANNED, -1);
         ctx.write("graph_category query");
         ctx.write("graph_vlabel Servers");
 
