@@ -3,6 +3,9 @@ project(zandrospy)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 add_executable(zandrospy
     buffer.cpp
     buffer.h
@@ -42,6 +45,8 @@ add_executable(zandrospy
 if (WIN32)
     target_link_libraries(zandrospy PRIVATE ws2_32)
 endif ()
+
+target_link_libraries(zandrospy PRIVATE Threads::Threads)
 
 target_include_directories(zandrospy PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
