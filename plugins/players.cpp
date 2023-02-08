@@ -34,6 +34,7 @@ REGISTER_PLUGIN(players_state) {
 
     if (ctx.isConfig()) {
         ctx.write("graph_title Total players by state");
+        ctx.write("graph_order in_game spectator bot");
         ctx.write("graph_category players");
         ctx.write("graph_vlabel Players");
         for (const auto &pair : map) {
