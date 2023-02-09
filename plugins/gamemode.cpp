@@ -38,6 +38,7 @@ REGISTER_PLUGIN(gamemodes_servers) {
             ctx.writef("gm%d.label %s", pair.first, GAMEMODE_NAMES[pair.first]);
             ctx.writef("gm%d.min 0", pair.first);
             ctx.writef("gm%d.draw AREASTACK", pair.first);
+            ctx.writef("gm%d.info Number of servers currently on %s", pair.first, GAMEMODE_NAMES[pair.first]);
         }
     }
 
@@ -66,7 +67,7 @@ REGISTER_PLUGIN(gamemodes_players) {
     }
 
     if (ctx.isConfig()) {
-        ctx.write("graph_title Game modes by player count");
+        ctx.write("graph_title Game modes by client count");
         ctx.write("graph_category gamemode");
         ctx.write("graph_vlabel Players");
 
@@ -74,6 +75,7 @@ REGISTER_PLUGIN(gamemodes_players) {
             ctx.writef("gm%d.label %s", pair.first, GAMEMODE_NAMES[pair.first]);
             ctx.writef("gm%d.min 0", pair.first);
             ctx.writef("gm%d.draw AREASTACK", pair.first);
+            ctx.writef("gm%d.info Number of human (non-bot) clients in %s servers", pair.first, GAMEMODE_NAMES[pair.first]);
         }
     }
 

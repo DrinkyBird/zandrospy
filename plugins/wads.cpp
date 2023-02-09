@@ -31,6 +31,7 @@ REGISTER_PLUGIN(iwads_servers) {
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
             ctx.writef("%s.draw AREASTACK", filtered.c_str());
+            ctx.writef("%s.info Total number of servers on the master running %s", filtered.c_str(), pair.first.c_str());
         }
     }
 
@@ -61,7 +62,7 @@ REGISTER_PLUGIN(iwads_players) {
     ctx.unlockServerData();
 
     if (ctx.isConfig()) {
-        ctx.write("graph_title IWADs by player count");
+        ctx.write("graph_title IWADs by client count");
         ctx.write("graph_category wads");
         ctx.write("graph_vlabel Players");
 
@@ -70,6 +71,7 @@ REGISTER_PLUGIN(iwads_players) {
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
             ctx.writef("%s.draw AREASTACK", filtered.c_str());
+            ctx.writef("%s.info Total number of human (non-bot) clients on servers running %s", filtered.c_str(), pair.first.c_str());
         }
     }
 
@@ -127,6 +129,7 @@ REGISTER_PLUGIN(pwads_servers) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
+            ctx.writef("%s.info Total number of servers on the master running %s", filtered.c_str(), pair.first.c_str());
         }
     }
 
@@ -175,7 +178,7 @@ REGISTER_PLUGIN(pwads_players) {
     }
 
     if (ctx.isConfig()) {
-        ctx.write("graph_title PWADs by player count");
+        ctx.write("graph_title PWADs by client count");
         ctx.write("graph_category wads");
         ctx.write("graph_vlabel Players");
         ctx.writef<32 * 1024>("graph_order %s", order.c_str());
@@ -184,6 +187,7 @@ REGISTER_PLUGIN(pwads_players) {
             auto filtered = filterKey(pair.first);
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
+            ctx.writef("%s.info Total number of human (non-bot) clients on servers running %s", filtered.c_str(), pair.first.c_str());
         }
     }
 

@@ -32,6 +32,7 @@ REGISTER_PLUGIN(versions_servers) {
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
             ctx.writef("%s.draw AREASTACK", filtered.c_str());
+            ctx.writef("%s.info Number of servers on the master running Zandronum %s", filtered.c_str(), pair.first.c_str());
         }
     }
 
@@ -64,7 +65,7 @@ REGISTER_PLUGIN(versions_players) {
     ctx.unlockServerData();
 
     if (ctx.isConfig()) {
-        ctx.write("graph_title Versions by player count");
+        ctx.write("graph_title Versions by client count");
         ctx.write("graph_category version");
         ctx.write("graph_vlabel Players");
 
@@ -73,6 +74,7 @@ REGISTER_PLUGIN(versions_players) {
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
             ctx.writef("%s.draw AREASTACK", filtered.c_str());
+            ctx.writef("%s.info Number of human (non-bot) clients on servers running Zandronum %s", filtered.c_str(), pair.first.c_str());
         }
     }
 
@@ -115,6 +117,7 @@ REGISTER_PLUGIN(platforms_servers) {
             ctx.writef("%s.label %s", filtered.c_str(), pair.first.c_str());
             ctx.writef("%s.min 0", filtered.c_str());
             ctx.writef("%s.draw AREASTACK", filtered.c_str());
+            ctx.writef("%s.info Number of servers running %s", filtered.c_str(), pair.first.c_str());
         }
     }
 

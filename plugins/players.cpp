@@ -3,11 +3,12 @@
 
 REGISTER_PLUGIN(players) {
     if (ctx.isConfig()) {
-        ctx.write("graph_title Total players");
+        ctx.write("graph_title Total clients");
         ctx.write("graph_category players");
         ctx.write("graph_vlabel Players");
         ctx.write("players.label Players");
         ctx.write("players.min 0");
+        ctx.write("players.info Total number of human (non-bot) clients across on servers on the master");
     }
 
     if (ctx.isFetch()) {
@@ -33,7 +34,7 @@ REGISTER_PLUGIN(players_state) {
     };
 
     if (ctx.isConfig()) {
-        ctx.write("graph_title Total players by state");
+        ctx.write("graph_title Total clients by state");
         ctx.write("graph_order in_game spectator bot");
         ctx.write("graph_category players");
         ctx.write("graph_vlabel Players");
@@ -83,7 +84,7 @@ REGISTER_PLUGIN(players_chain) {
     ctx.unlockServerData();
 
     if (ctx.isConfig()) {
-        ctx.write("graph_title Players by server chain");
+        ctx.write("graph_title Clients by server chain");
         ctx.write("graph_category players");
         ctx.write("graph_vlabel Players");
 
@@ -91,6 +92,7 @@ REGISTER_PLUGIN(players_chain) {
             ctx.writef("c%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
             ctx.writef("c%d.min 0", pair.first);
             ctx.writef("c%d.draw AREASTACK", pair.first);
+            ctx.writef("c%d.info Number of human (non-bot) clients in %s servers", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
         }
     }
 

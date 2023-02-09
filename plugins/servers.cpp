@@ -8,6 +8,7 @@ REGISTER_PLUGIN(servers) {
         ctx.write("graph_vlabel Servers");
         ctx.write("servers.label Servers");
         ctx.write("servers.min 0");
+        ctx.write("servers.info Total number of servers on the master that returned a response to the querent");
     }
 
     if (ctx.isFetch()) {
@@ -47,6 +48,7 @@ REGISTER_PLUGIN(servers_chain) {
             ctx.writef("c%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
             ctx.writef("c%d.min 0", pair.first);
             ctx.writef("c%d.draw AREASTACK", pair.first);
+            ctx.writef("c%d.info Number servers on the master belonging to %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
         }
     }
 
