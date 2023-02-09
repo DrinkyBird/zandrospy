@@ -8,7 +8,7 @@ REGISTER_PLUGIN(players) {
         ctx.write("graph_vlabel Players");
         ctx.write("players.label Players");
         ctx.write("players.min 0");
-        ctx.write("players.info Total number of human (non-bot) clients across on servers on the master");
+        ctx.write("players.info Total number of human (non-bot) clients across servers on the master");
     }
 
     if (ctx.isFetch()) {

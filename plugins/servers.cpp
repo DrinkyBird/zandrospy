@@ -48,7 +48,7 @@ REGISTER_PLUGIN(servers_chain) {
             ctx.writef("c%d.label %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
             ctx.writef("c%d.min 0", pair.first);
             ctx.writef("c%d.draw AREASTACK", pair.first);
-            ctx.writef("c%d.info Number servers on the master belonging to %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
+            ctx.writef("c%d.info Number of servers on the master belonging to %s", pair.first, SERVER_CHAIN_MAP[pair.first].c_str());
         }
     }
 

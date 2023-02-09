@@ -6,7 +6,7 @@
 static std::map<int32_t, std::pair<std::string, std::string>> RESPONSE_MAP = {
     { SERVER_LAUNCHER_CHALLENGE, { "Success", "The query request succeeded" } },
     { SERVER_LAUNCHER_IGNORING, { "Too fast", "The request was ignored due to rate limiting" } },
-    { SERVER_LAUNCHER_BANNED, { "Banned", "The query host is banned from this server" } },
+    { SERVER_LAUNCHER_BANNED, { "Banned", "The querent is banned from this server" } },
     { -1, { "Timed out", "The request was not responded to in time or another error occurred" } }
 };
 
@@ -94,6 +94,7 @@ REGISTER_PLUGIN(master_traffic) {
         ctx.write("out.label bytes");
         ctx.write("out.negative in");
         ctx.write("out.min 0");
+        ctx.write("out.info Total bytes transferred between the querent and the master server");
     }
 
     if (ctx.isFetch()) {
@@ -121,6 +122,7 @@ REGISTER_PLUGIN(query_traffic) {
         ctx.write("out.label bytes");
         ctx.write("out.negative in");
         ctx.write("out.min 0");
+        ctx.write("out.info Total bytes transferred between the querent and all queried game servers");
     }
 
     if (ctx.isFetch()) {
