@@ -10,9 +10,9 @@
 
 static constexpr uint16_t MASTER_PORT = 15300;
 
-static constexpr uint32_t QUERY_1 = SQF_PWADS|SQF_GAMETYPE|SQF_IWAD|SQF_NUMPLAYERS|SQF_PLAYERDATA|SQF_TEAMINFO_NUMBER|SQF_TESTING_SERVER|SQF_EXTENDED_INFO;
+static constexpr uint32_t QUERY_1 = SQF_PWADS|SQF_GAMETYPE|SQF_IWAD|SQF_NUMPLAYERS|SQF_PLAYERDATA|SQF_TEAMINFO_NUMBER;
 
-static constexpr uint32_t QUERY_2 = SQF2_COUNTRY;
+static constexpr uint32_t QUERY_2 = 0;
 
 ZanQuerent::ZanQuerent(App *app) :
     app(app),
@@ -451,6 +451,14 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
             server.country += buffer.read<char>();
             server.country += buffer.read<char>();
             server.country += buffer.read<char>();
+        }
+
+        if (server.flags2 & SQF2_GAMEMODE_NAME) {
+            buffer.readString();
+        }
+
+        if (server.flags2 & SQF2_GAMEMODE_SHORTNAME) {
+            buffer.readString();
         }
     }
 
