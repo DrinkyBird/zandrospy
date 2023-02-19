@@ -190,7 +190,9 @@ void ZanQuerent::workQueryQueue() {
     queryBuf.write<uint32_t>(199);
     queryBuf.write<uint32_t>(QUERY_1);
     queryBuf.write<uint32_t>(time(nullptr));
-    queryBuf.write<uint32_t>(QUERY_2);
+    if (QUERY_1 & SQF_EXTENDED_INFO) {
+        queryBuf.write<uint32_t>(QUERY_2);
+    }
     queryBuf.huffmanify();
 
     auto front = queryQueue.front();
