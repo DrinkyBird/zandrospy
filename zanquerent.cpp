@@ -146,23 +146,25 @@ void ZanQuerent::handleMasterResponse(Buffer &buffer) {
                 auto marker = buffer.read<uint8_t>();
 
                 if (marker == MSC_SERVERBLOCK) {
-                    while (true) {
-                        auto num = buffer.read<uint8_t>();
-
-                        if (num == 0) {
-                            break;
-                        }
-
+                    uint8_t ports;
+                    while ((ports = buffer.read<uint8_t>())) {
                         sockaddr_in addr{};
                         addr.sin_family = AF_INET;
                         addr.sin_addr.s_addr = buffer.read<uint32_t>();
 
-                        for (int i = 0; i < num; i++) {
+                        for (int i = 0; i < ports; i++) {
                             addr.sin_port = htons(buffer.read<uint16_t>());
                             serverAddresses.emplace_back(addr);
                             queryQueue.push(addr);
                         }
                     }
+                } else if (marker == MSC_SERVER) {
+                    sockaddr_in addr{};
+                    addr.sin_family = AF_INET;
+                    addr.sin_addr.s_addr = buffer.read<uint32_t>();
+                    addr.sin_port = htons(buffer.read<uint16_t>());
+                    serverAddresses.emplace_back(addr);
+                    queryQueue.push(addr);
                 }
 
                 break;
