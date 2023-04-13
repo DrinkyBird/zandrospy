@@ -3,7 +3,7 @@
 #include "muninnode.h"
 #include "zanproto.h"
 
-static std::map<int32_t, std::pair<std::string, std::string>> RESPONSE_MAP = {
+static const std::map<int32_t, std::pair<std::string, std::string>> RESPONSE_MAP = {
     { SERVER_LAUNCHER_CHALLENGE, { "Success", "The query request succeeded" } },
     { SERVER_LAUNCHER_IGNORING, { "Too fast", "The request was ignored due to rate limiting" } },
     { SERVER_LAUNCHER_BANNED, { "Banned", "The querent is banned from this server" } },
@@ -45,8 +45,8 @@ REGISTER_PLUGIN(servers_response) {
 
         for (const auto &pair : ordered) {
             if (RESPONSE_MAP.count(pair.first)) {
-                ctx.writef("%d.label %s", pair.first, RESPONSE_MAP[pair.first].first.c_str());
-                ctx.writef("%d.info %s", pair.first, RESPONSE_MAP[pair.first].second.c_str());
+                ctx.writef("%d.label %s", pair.first, RESPONSE_MAP.at(pair.first).first.c_str());
+                ctx.writef("%d.info %s", pair.first, RESPONSE_MAP.at(pair.first).second.c_str());
             } else {
                 ctx.writef("%d.label %d", pair.first, pair.first);
             }
