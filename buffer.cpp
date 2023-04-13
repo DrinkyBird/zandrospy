@@ -18,7 +18,7 @@ Buffer::~Buffer() {
 }
 
 
-size_t Buffer::tell() {
+size_t Buffer::tell() const {
     return position;
 }
 

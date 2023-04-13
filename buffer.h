@@ -10,7 +10,7 @@ public:
     explicit Buffer(size_t length);
     ~Buffer();
 
-    size_t tell();
+    [[nodiscard]] size_t tell() const;
     void seek(size_t pos);
     void advance(size_t by);
 
@@ -55,8 +55,8 @@ public:
     void huffmanify();
     void dehuffmanify();
 
-    uint8_t *getData() const;
-    size_t getLength() const;
+    [[nodiscard]] uint8_t *getData() const;
+    [[nodiscard]] size_t getLength() const;
 
     void save(const std::string &path);
 
