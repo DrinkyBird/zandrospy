@@ -16,13 +16,21 @@ public:
 
     template<typename T>
     inline void write(const T value) {
+        if (position + sizeof(T) > length) {
+            return;
+        }
+
         auto *p = reinterpret_cast<T *>(data + position);
         *p = static_cast<T>(value);
         advance(sizeof(T));
     }
 
     template<typename T>
-    inline T read() {
+    inline T read(const T def = 0) {
+        if (position + sizeof(T) > length) {
+            return def;
+        }
+
         T value = *(reinterpret_cast<T *>(data + position));
         advance(sizeof(T));
         return value;
@@ -36,6 +44,10 @@ public:
 
         T value = reinterpret_cast<T *>(data + position);
         return value;
+    }
+
+    [[nodiscard]] inline bool isEnd() const {
+        return position >= length - 1;
     }
 
     std::string readString();

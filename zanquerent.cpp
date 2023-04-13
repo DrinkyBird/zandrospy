@@ -122,7 +122,7 @@ void ZanQuerent::receive() {
 }
 
 void ZanQuerent::handleMasterResponse(Buffer &buffer) {
-    while (buffer.tell() < buffer.getLength()) {
+    while (!buffer.isEnd()) {
         auto response = buffer.read<uint32_t>();
 
         switch (response) {
