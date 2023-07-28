@@ -22,6 +22,7 @@ public:
 
     void queryMaster();
     void workQueryQueue();
+    void swapServers();
 
 private:
     std::string makeServerId(const sockaddr_in &origin);
@@ -45,5 +46,5 @@ private:
     QueryStats stagingStats;
     MeasureClock::time_point queryStartTime;
 
-    time_t lastQueryTime;
+    time_t lastQueryTime, lastSendTime;
 };

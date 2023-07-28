@@ -16,7 +16,7 @@ static constexpr uint32_t QUERY_2 = 0;
 
 ZanQuerent::ZanQuerent(App *app) :
     app(app),
-    socket(INVALID_SOCKET), lastQueryTime(0) {
+    socket(INVALID_SOCKET), lastQueryTime(0), lastSendTime(0) {
     socket = ::socket(AF_INET, SOCK_DGRAM, 0);
 
     hostent *he;
@@ -48,6 +48,7 @@ void ZanQuerent::run() {
 
     receive();
     workQueryQueue();
+    swapServers();
 }
 
 void ZanQuerent::queryMaster() {
@@ -209,11 +210,15 @@ void ZanQuerent::workQueryQueue() {
         return;
     }
 
+    lastSendTime = time(nullptr);
+
     stagingStats.queryTrafficOut += queryBuf.getLength();
 
     printf("working: %zu, %zu\n", queryQueue.size(), stagingData.size());
+}
 
-    if (queryQueue.empty() && !stagingData.empty()) {
+void ZanQuerent::swapServers() {
+    if (queryQueue.empty() && !stagingData.empty() && time(nullptr) - lastSendTime >= 4) {
         stagingStats.queryTime = toSeconds<MeasureClock>(MeasureClock::now() - queryStartTime);
 
         pthread_mutex_lock(&app->serverDataMutex);
