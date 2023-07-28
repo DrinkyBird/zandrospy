@@ -213,8 +213,6 @@ void ZanQuerent::workQueryQueue() {
     lastSendTime = time(nullptr);
 
     stagingStats.queryTrafficOut += queryBuf.getLength();
-
-    printf("working: %zu, %zu\n", queryQueue.size(), stagingData.size());
 }
 
 void ZanQuerent::swapServers() {
@@ -249,7 +247,6 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     bool segmented = false;
 
     server.response = buffer.read<int32_t>();
-    printf("%u\n", server.response);
 
     if (server.response == SERVER_LAUNCHER_CHALLENGE) {
         auto pingTime = buffer.read<uint32_t>();
@@ -379,7 +376,6 @@ void ZanQuerent::handleFields(ZanServer &server, Buffer &buffer, bool segmented)
             if (server.flags & SQF_NUMPLAYERS) {
                 int num = buffer.read<uint8_t>();
                 server.players.resize(num);
-                printf("%d players\n", num);
             }
 
             if (server.flags & SQF_PLAYERDATA) {
