@@ -10,7 +10,7 @@
 
 static constexpr uint16_t MASTER_PORT = 15300;
 
-static constexpr uint32_t QUERY_1 = SQF_PWADS|SQF_GAMETYPE|SQF_IWAD|SQF_NUMPLAYERS|SQF_PLAYERDATA|SQF_TEAMINFO_NUMBER;
+static constexpr uint32_t QUERY_1 = SQF_PWADS|SQF_GAMETYPE|SQF_IWAD|SQF_NUMPLAYERS|SQF_PLAYERDATA|SQF_TEAMINFO_NUMBER|SQF_EXTENDED_INFO;
 
 static constexpr uint32_t QUERY_2 = 0;
 
@@ -188,13 +188,12 @@ void ZanQuerent::workQueryQueue() {
         return;
     }
 
-    Buffer queryBuf(16);
+    Buffer queryBuf(17);
     queryBuf.write<uint32_t>(199);
     queryBuf.write<uint32_t>(QUERY_1);
     queryBuf.write<uint32_t>(time(nullptr));
-    if (QUERY_1 & SQF_EXTENDED_INFO) {
-        queryBuf.write<uint32_t>(QUERY_2);
-    }
+    queryBuf.write<uint32_t>(QUERY_2);
+    queryBuf.write<uint8_t>(1);
     queryBuf.huffmanify();
 
     auto front = queryQueue.front();
@@ -211,6 +210,8 @@ void ZanQuerent::workQueryQueue() {
     }
 
     stagingStats.queryTrafficOut += queryBuf.getLength();
+
+    printf("working: %zu, %zu\n", queryQueue.size(), stagingData.size());
 
     if (queryQueue.empty() && !stagingData.empty()) {
         stagingStats.queryTime = toSeconds<MeasureClock>(MeasureClock::now() - queryStartTime);
@@ -240,233 +241,268 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
 
     ZanServer &server = stagingData[id];
 
-    server.response = buffer.read<int32_t>();
-    auto pingTime = buffer.read<uint32_t>();
+    bool segmented = false;
 
-    if (server.response != SERVER_LAUNCHER_CHALLENGE) {
+    server.response = buffer.read<int32_t>();
+
+    if (server.response != SERVER_LAUNCHER_CHALLENGE && server.response != SERVER_LAUNCHER_SEGMENTED_CHALLENGE) {
         return;
     }
 
-    server.version = buffer.readString();
-    server.flags = buffer.read<uint32_t>();
-    int numPlayers = 0;
+    if (server.response == SERVER_LAUNCHER_CHALLENGE) {
+        auto pingTime = buffer.read<uint32_t>();
+        server.version = buffer.readString();
 
-    if (server.flags & SQF_NAME) {
-        server.name = buffer.readString();
-    }
+        handleFields(server, buffer, false);
+    } else if (server.response == SERVER_LAUNCHER_SEGMENTED_CHALLENGE) {
+        unsigned int segmentNumber = buffer.read<uint8_t>();
+        const int size = buffer.read<uint16_t>();
 
-    if (server.flags & SQF_URL) {
-        server.url = buffer.readString();
-    }
+        bool isEnd = (segmentNumber & (1 << 7));
+        segmentNumber &= ~(1 << 7);
 
-    if (server.flags & SQF_EMAIL) {
-        server.email = buffer.readString();
-    }
-
-    if (server.flags & SQF_MAPNAME) {
-        server.mapname = buffer.readString();
-    }
-
-    if (server.flags & SQF_MAXCLIENTS) {
-        server.maxClients = buffer.read<uint8_t>();
-    }
-
-    if (server.flags & SQF_MAXPLAYERS) {
-        server.maxPlayers = buffer.read<uint8_t>();
-    }
-
-    if (server.flags & SQF_PWADS) {
-        auto num = buffer.read<uint8_t>();
-        for (int i = 0; i < num; i++) {
-            ZanPWAD pwad;
-            pwad.name = buffer.readString();
-            pwad.isOptional = false;
-            pwad.hash = "";
-
-            server.pwads.emplace_back(pwad);
-        }
-    }
-
-    if (server.flags & SQF_GAMETYPE) {
-        server.gamemode = buffer.read<uint8_t>();
-        server.instagib = buffer.read<uint8_t>() != 0;
-        server.buckshot = buffer.read<uint8_t>() != 0;
-    }
-
-    if (server.flags & SQF_GAMENAME) {
-        buffer.readString();
-    }
-
-    if (server.flags & SQF_IWAD) {
-        server.iwad = buffer.readString();
-    }
-
-    if (server.flags & SQF_FORCEPASSWORD) {
-        server.forcePassword = buffer.read<uint8_t>() != 0;
-    }
-
-    if (server.flags & SQF_FORCEJOINPASSWORD) {
-        server.forceJoinPassword = buffer.read<uint8_t>() != 0;
-    }
-
-    if (server.flags & SQF_GAMESKILL) {
-        server.skill = buffer.read<uint8_t>();
-    }
-
-    if (server.flags & SQF_BOTSKILL) {
-        server.botSkill = buffer.read<uint8_t>();
-    }
-
-    if (server.flags & SQF_DMFLAGS) {
-        server.dmflags = buffer.read<uint32_t>();
-        server.dmflags2 = buffer.read<uint32_t>();
-        server.compatflags = buffer.read<uint32_t>();
-    }
-
-    if (server.flags & SQF_LIMITS) {
-        server.fragLimit = buffer.read<uint16_t>();
-        server.timeLimit = buffer.read<uint16_t>();
-        server.timeLeft = server.timeLimit > 0 ? buffer.read<uint16_t>() : 0;
-        server.duelLimit = buffer.read<uint16_t>();
-        server.pointLimit = buffer.read<uint16_t>();
-        server.winLimit = buffer.read<uint16_t>();
-    }
-
-    if (server.flags & SQF_TEAMDAMAGE) {
-        server.teamDamage = buffer.read<float>();
-    }
-
-    if (server.flags & SQF_TEAMSCORES) {
-        buffer.read<uint16_t>();
-        buffer.read<uint16_t>();
-    }
-
-    if (server.flags & SQF_NUMPLAYERS) {
-        numPlayers = buffer.read<uint8_t>();
-    }
-
-    if (server.flags & SQF_PLAYERDATA) {
-        for (int i = 0; i < numPlayers; i++) {
-            ZanPlayer player;
-            player.name = buffer.readString();
-            player.score = buffer.read<uint16_t>();
-            player.ping = buffer.read<uint16_t>();
-            player.spectator = buffer.read<uint8_t>() != 0;
-            player.bot = buffer.read<uint8_t>() != 0;
-            if (server.flags & SQF_TEAMINFO_NUMBER) {
-                player.team = buffer.read<int8_t>();
-            } else {
-                player.team = -1;
-            }
-            player.time = buffer.read<int8_t>();
-            server.players.emplace_back(player);
-
-            if (!player.bot) {
-                server.numHumanPlayers++;
-
-                if (player.spectator) {
-                    server.numSpectators++;
-                } else {
-                    server.numInGamePlayers++;
-                }
-            }
-        }
-    }
-
-    int numTeams = 0;
-    if (server.flags & SQF_TEAMINFO_NUMBER) {
-        numTeams = buffer.read<uint8_t>();
-        for (int i = 0; i < numTeams; i++) {
-            ZanTeam team;
-            server.teams.emplace_back(team);
-        }
-    }
-
-    if (server.flags & SQF_TEAMINFO_NAME) {
-        for (int i = 0; i < numTeams; i++) {
-            server.teams[i].name = buffer.readString();
-        }
-    }
-
-    if (server.flags & SQF_TEAMINFO_COLOR) {
-        for (int i = 0; i < numTeams; i++) {
-            server.teams[i].colour = buffer.read<uint32_t>();
-        }
-    }
-
-    if (server.flags & SQF_TEAMINFO_SCORE) {
-        for (int i = 0; i < numTeams; i++) {
-            server.teams[i].score = buffer.read<uint16_t>();
-        }
-    }
-
-    if (server.flags & SQF_TESTING_SERVER) {
-        server.isTestingBuild = buffer.read<uint8_t>() != 0;
-        server.testBuildUrl = buffer.readString();
-    }
-
-    if (server.flags & SQF_DATA_MD5SUM) {
-        buffer.readString();
-    }
-
-    if (server.flags & SQF_ALL_DMFLAGS) {
-        int num = buffer.read<uint8_t>();
-        for (int i = 0; i < num; i++) {
-            auto val = buffer.read<uint32_t>();
-            if (i == 0) server.dmflags = val;
-            if (i == 1) server.dmflags2 = val;
-            if (i == 2) server.zadmflags = val;
-            if (i == 3) server.compatflags = val;
-            if (i == 4) server.zacompatflags = val;
-            if (i == 5) server.compatflags2 = val;
-        }
-    }
-
-    if (server.flags & SQF_SECURITY_SETTINGS) {
-        server.securitySettings = buffer.read<uint8_t>() != 0;
-    }
-
-    if (server.flags & SQF_OPTIONAL_WADS) {
-        int num = buffer.read<uint8_t>();
-        for (int i = 0; i < num; i++) {
-            server.pwads[buffer.read<uint8_t>()].isOptional = true;
-        }
-    }
-
-    if (server.flags & SQF_DEH) {
-        int num = buffer.read<uint8_t>();
-        for (int i = 0; i < num; i++) {
-            server.dehackedPatches.emplace_back(buffer.readString());
-        }
-    }
-
-    if (server.flags & SQF_EXTENDED_INFO) {
-        server.flags2 = buffer.read<uint32_t>();
-
-        if (server.flags2 & SQF2_PWAD_HASHES) {
-            int num = buffer.read<uint8_t>();
-            for (int i = 0; i < num; i++) {
-                server.pwads[i].hash = buffer.readString();
-            }
+        if (segmentNumber == 0) {
+            auto pingTime = buffer.read<uint32_t>();
+            server.version = buffer.readString();
         }
 
-        if (server.flags2 & SQF2_COUNTRY) {
-            server.country.clear();
-            server.country += buffer.read<char>();
-            server.country += buffer.read<char>();
-            server.country += buffer.read<char>();
-        }
-
-        if (server.flags2 & SQF2_GAMEMODE_NAME) {
-            buffer.readString();
-        }
-
-        if (server.flags2 & SQF2_GAMEMODE_SHORTNAME) {
-            buffer.readString();
-        }
+        handleFields(server, buffer, true);
+    } else {
+        return;
     }
 
     server.serverChain = determineServerChain(server, origin);
+}
+
+void ZanQuerent::handleFields(ZanServer &server, Buffer &buffer, bool segmented) {
+    int fieldsetNum = 0;
+    uint32_t flags = 0;
+    while (!buffer.isEnd()) {
+        fieldsetNum = segmented ? buffer.read<uint8_t>() : fieldsetNum + 1;
+        flags = buffer.read<uint32_t>();
+
+        if (fieldsetNum == 0) {
+            server.flags = flags;
+
+            if (server.flags & SQF_NAME) {
+                server.name = buffer.readString();
+            }
+
+            if (server.flags & SQF_URL) {
+                server.url = buffer.readString();
+            }
+
+            if (server.flags & SQF_EMAIL) {
+                server.email = buffer.readString();
+            }
+
+            if (server.flags & SQF_MAPNAME) {
+                server.mapname = buffer.readString();
+            }
+
+            if (server.flags & SQF_MAXCLIENTS) {
+                server.maxClients = buffer.read<uint8_t>();
+            }
+
+            if (server.flags & SQF_MAXPLAYERS) {
+                server.maxPlayers = buffer.read<uint8_t>();
+            }
+
+            if (server.flags & SQF_PWADS) {
+                auto num = buffer.read<uint8_t>();
+                for (int i = 0; i < num; i++) {
+                    ZanPWAD pwad;
+                    pwad.name = buffer.readString();
+                    pwad.isOptional = false;
+                    pwad.hash = "";
+
+                    server.pwads.emplace_back(pwad);
+                }
+            }
+
+            if (server.flags & SQF_GAMETYPE) {
+                server.gamemode = buffer.read<uint8_t>();
+                server.instagib = buffer.read<uint8_t>() != 0;
+                server.buckshot = buffer.read<uint8_t>() != 0;
+            }
+
+            if (server.flags & SQF_GAMENAME) {
+                buffer.readString();
+            }
+
+            if (server.flags & SQF_IWAD) {
+                server.iwad = buffer.readString();
+            }
+
+            if (server.flags & SQF_FORCEPASSWORD) {
+                server.forcePassword = buffer.read<uint8_t>() != 0;
+            }
+
+            if (server.flags & SQF_FORCEJOINPASSWORD) {
+                server.forceJoinPassword = buffer.read<uint8_t>() != 0;
+            }
+
+            if (server.flags & SQF_GAMESKILL) {
+                server.skill = buffer.read<uint8_t>();
+            }
+
+            if (server.flags & SQF_BOTSKILL) {
+                server.botSkill = buffer.read<uint8_t>();
+            }
+
+            if (server.flags & SQF_DMFLAGS) {
+                server.dmflags = buffer.read<uint32_t>();
+                server.dmflags2 = buffer.read<uint32_t>();
+                server.compatflags = buffer.read<uint32_t>();
+            }
+
+            if (server.flags & SQF_LIMITS) {
+                server.fragLimit = buffer.read<uint16_t>();
+                server.timeLimit = buffer.read<uint16_t>();
+                server.timeLeft = server.timeLimit > 0 ? buffer.read<uint16_t>() : 0;
+                server.duelLimit = buffer.read<uint16_t>();
+                server.pointLimit = buffer.read<uint16_t>();
+                server.winLimit = buffer.read<uint16_t>();
+            }
+
+            if (server.flags & SQF_TEAMDAMAGE) {
+                server.teamDamage = buffer.read<float>();
+            }
+
+            if (server.flags & SQF_TEAMSCORES) {
+                buffer.read<uint16_t>();
+                buffer.read<uint16_t>();
+            }
+
+            if (server.flags & SQF_NUMPLAYERS) {
+                int num = buffer.read<uint8_t>();
+                server.players.resize(num);
+                printf("%d players\n", num);
+            }
+
+            if (server.flags & SQF_PLAYERDATA) {
+                bool isTeam = segmented ? !!buffer.read<uint8_t>() : (server.flags & SQF_TEAMINFO_NUMBER);
+                for (int i = 0; i < server.players.size(); i++) {
+                    ZanPlayer player;
+                    player.name = buffer.readString();
+                    player.score = buffer.read<uint16_t>();
+                    player.ping = buffer.read<uint16_t>();
+                    player.spectator = buffer.read<uint8_t>() != 0;
+                    player.bot = buffer.read<uint8_t>() != 0;
+                    if (isTeam) {
+                        player.team = buffer.read<int8_t>();
+                    } else {
+                        player.team = -1;
+                    }
+                    player.time = buffer.read<int8_t>();
+                    server.players[i] = player;
+
+                    if (!player.bot) {
+                        server.numHumanPlayers++;
+
+                        if (player.spectator) {
+                            server.numSpectators++;
+                        } else {
+                            server.numInGamePlayers++;
+                        }
+                    }
+                }
+            }
+
+            int numTeams = 0;
+            if (server.flags & SQF_TEAMINFO_NUMBER) {
+                numTeams = buffer.read<uint8_t>();
+                for (int i = 0; i < numTeams; i++) {
+                    ZanTeam team;
+                    server.teams.emplace_back(team);
+                }
+            }
+
+            if (server.flags & SQF_TEAMINFO_NAME) {
+                for (int i = 0; i < numTeams; i++) {
+                    server.teams[i].name = buffer.readString();
+                }
+            }
+
+            if (server.flags & SQF_TEAMINFO_COLOR) {
+                for (int i = 0; i < numTeams; i++) {
+                    server.teams[i].colour = buffer.read<uint32_t>();
+                }
+            }
+
+            if (server.flags & SQF_TEAMINFO_SCORE) {
+                for (int i = 0; i < numTeams; i++) {
+                    server.teams[i].score = buffer.read<uint16_t>();
+                }
+            }
+
+            if (server.flags & SQF_TESTING_SERVER) {
+                server.isTestingBuild = buffer.read<uint8_t>() != 0;
+                server.testBuildUrl = buffer.readString();
+            }
+
+            if (server.flags & SQF_DATA_MD5SUM) {
+                buffer.readString();
+            }
+
+            if (server.flags & SQF_ALL_DMFLAGS) {
+                int num = buffer.read<uint8_t>();
+                for (int i = 0; i < num; i++) {
+                    auto val = buffer.read<uint32_t>();
+                    if (i == 0) server.dmflags = val;
+                    if (i == 1) server.dmflags2 = val;
+                    if (i == 2) server.zadmflags = val;
+                    if (i == 3) server.compatflags = val;
+                    if (i == 4) server.zacompatflags = val;
+                    if (i == 5) server.compatflags2 = val;
+                }
+            }
+
+            if (server.flags & SQF_SECURITY_SETTINGS) {
+                server.securitySettings = buffer.read<uint8_t>() != 0;
+            }
+
+            if (server.flags & SQF_OPTIONAL_WADS) {
+                int num = buffer.read<uint8_t>();
+                for (int i = 0; i < num; i++) {
+                    server.pwads[buffer.read<uint8_t>()].isOptional = true;
+                }
+            }
+
+            if (server.flags & SQF_DEH) {
+                int num = buffer.read<uint8_t>();
+                for (int i = 0; i < num; i++) {
+                    server.dehackedPatches.emplace_back(buffer.readString());
+                }
+            }
+        } else if (fieldsetNum == 1) {
+            if (server.flags2 & SQF2_PWAD_HASHES) {
+                int num = buffer.read<uint8_t>();
+                for (int i = 0; i < num; i++) {
+                    server.pwads[i].hash = buffer.readString();
+                }
+            }
+
+            if (server.flags2 & SQF2_COUNTRY) {
+                server.country.clear();
+                server.country += buffer.read<char>();
+                server.country += buffer.read<char>();
+                server.country += buffer.read<char>();
+            }
+
+            if (server.flags2 & SQF2_GAMEMODE_NAME) {
+                buffer.readString();
+            }
+
+            if (server.flags2 & SQF2_GAMEMODE_SHORTNAME) {
+                buffer.readString();
+            }
+        }
+
+        if (!(flags & SQF_EXTENDED_INFO)) {
+            break;
+        }
+    }
 }
 
 int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origin) {

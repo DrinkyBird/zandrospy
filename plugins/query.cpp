@@ -5,6 +5,7 @@
 
 static const std::map<int32_t, std::pair<std::string, std::string>> RESPONSE_MAP = {
     { SERVER_LAUNCHER_CHALLENGE, { "Success", "The query request succeeded" } },
+    { SERVER_LAUNCHER_SEGMENTED_CHALLENGE, { "Success (segmented)", "The query request succeeded with a segmented response" } },
     { SERVER_LAUNCHER_IGNORING, { "Too fast", "The request was ignored due to rate limiting" } },
     { SERVER_LAUNCHER_BANNED, { "Banned", "The querent is banned from this server" } },
     { -1, { "Timed out", "The request was not responded to in time or another error occurred" } }
@@ -34,6 +35,7 @@ REGISTER_PLUGIN(servers_response) {
 
     std::vector<std::pair<int32_t, int>> ordered;
     push(map, ordered, SERVER_LAUNCHER_CHALLENGE);
+    push(map, ordered, SERVER_LAUNCHER_SEGMENTED_CHALLENGE);
     push(map, ordered, SERVER_LAUNCHER_IGNORING);
     push(map, ordered, SERVER_LAUNCHER_BANNED);
     push(map, ordered, -1);

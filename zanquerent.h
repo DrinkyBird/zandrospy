@@ -29,6 +29,7 @@ private:
     void receive();
     void handleMasterResponse(Buffer &buffer);
     void handleServerResponse(Buffer &buffer, const sockaddr_in &origin);
+    void handleFields(ZanServer &server, Buffer &buffer, bool segmented);
     int determineServerChain(ZanServer &server, const sockaddr_in &origin);
 
     App *app;

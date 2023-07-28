@@ -82,4 +82,6 @@ enum
 
     // [BB] Server is acknowledging the receipt of a ban list.
     SERVER_MASTER_BANLIST_RECEIPT,
+
+    SERVER_LAUNCHER_SEGMENTED_CHALLENGE
 };
