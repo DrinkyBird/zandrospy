@@ -74,7 +74,7 @@ struct ZanServer {
         dehackedPatches(), country("XUN") {}
 
     int32_t response;
-    [[nodiscard]] constexpr inline bool success() const { return response == 5660023; }
+    [[nodiscard]] constexpr inline bool success() const { return response == 5660023 || response == 5660031; }
     int serverChain;
 
     std::string version;
