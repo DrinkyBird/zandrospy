@@ -244,10 +244,7 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     bool segmented = false;
 
     server.response = buffer.read<int32_t>();
-
-    if (server.response != SERVER_LAUNCHER_CHALLENGE && server.response != SERVER_LAUNCHER_SEGMENTED_CHALLENGE) {
-        return;
-    }
+    printf("%u\n", server.response);
 
     if (server.response == SERVER_LAUNCHER_CHALLENGE) {
         auto pingTime = buffer.read<uint32_t>();
@@ -275,7 +272,7 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
 }
 
 void ZanQuerent::handleFields(ZanServer &server, Buffer &buffer, bool segmented) {
-    int fieldsetNum = 0;
+    int fieldsetNum = -1;
     uint32_t flags = 0;
     while (!buffer.isEnd()) {
         fieldsetNum = segmented ? buffer.read<uint8_t>() : fieldsetNum + 1;
