@@ -509,7 +509,7 @@ int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origi
     if (addr == "104.128.58.120") {
         return ServerChain_TSPG;
     }
-    else if (addr == "103.25.59.27") {
+    else if (addr == "192.9.173.60") {
         return ServerChain_DUD;
     }
     else if (addr == "54.36.165.167") {
@@ -518,14 +518,11 @@ int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origi
     else if (addr == "142.132.155.163") {
         return ServerChain_Euroboros;
     }
-    else if (addr == "134.195.14.136") {
+    else if (addr == "162.213.209.68") {
         return ServerChain_FAP;
     }
     else if (addr == "162.248.95.73") {
         return ServerChain_Rampage;
-    }
-    else if (addr == "185.150.189.56") {
-        return ServerChain_DemonCrusher;
     }
     else if (addr == "192.155.90.89") {
         return ServerChain_IFOC;
@@ -538,6 +535,9 @@ int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origi
     }
     else if (addr == "81.162.236.129") {
         return ServerChain_Ninferno;
+    }
+    else if (addr == "152.69.187.23") {
+        return ServerChain_ADHD;
     }
 
     return ServerChain_Other;
