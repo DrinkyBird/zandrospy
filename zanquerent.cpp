@@ -506,7 +506,7 @@ void ZanQuerent::handleFields(ZanServer &server, Buffer &buffer, bool segmented)
 int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origin) {
     std::string addr = inet_ntoa(origin.sin_addr);
 
-    if (addr == "104.128.58.120") {
+    if (addr == "104.194.11.54") {
         return ServerChain_TSPG;
     }
     else if (addr == "192.9.173.60") {
