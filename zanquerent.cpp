@@ -512,7 +512,7 @@ int ZanQuerent::determineServerChain(ZanServer &server, const sockaddr_in &origi
     else if (addr == "192.9.173.60") {
         return ServerChain_DUD;
     }
-    else if (addr == "54.36.165.167") {
+    else if (addr == "51.89.155.27") {
         return ServerChain_BlueFirestick;
     }
     else if (addr == "142.132.155.163") {
