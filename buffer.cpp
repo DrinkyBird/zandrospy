@@ -82,6 +82,16 @@ void Buffer::dehuffmanify() {
     length = (size_t)outsize;
 }
 
+bool Buffer::copy(void *src, size_t len, size_t offset) {
+    if (offset + len > length) {
+        return false;
+    }
+
+    memcpy(data + offset, src, len);
+    return true;
+}
+
+
 uint8_t *Buffer::getData() const {
     return this->data;
 }

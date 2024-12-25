@@ -194,7 +194,7 @@ void ZanQuerent::workQueryQueue() {
     queryBuf.write<uint32_t>(QUERY_1);
     queryBuf.write<uint32_t>(time(nullptr));
     queryBuf.write<uint32_t>(QUERY_2);
-    queryBuf.write<uint8_t>(1);
+    queryBuf.write<uint8_t>(2);
     queryBuf.huffmanify();
 
     auto front = queryQueue.front();
@@ -243,29 +243,33 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     }
 
     ZanServer &server = stagingData[id];
-
-    bool segmented = false;
-
     server.response = buffer.read<int32_t>();
 
     if (server.response == SERVER_LAUNCHER_CHALLENGE) {
-        auto pingTime = buffer.read<uint32_t>();
-        server.version = buffer.readString();
-
-        handleFields(server, buffer, false);
-    } else if (server.response == SERVER_LAUNCHER_SEGMENTED_CHALLENGE) {
+        handleFullResponse(server, buffer);
+    } else if (server.response == SERVER_LAUNCHER_CHALLENGE_SEGMENTED) {
         unsigned int segmentNumber = buffer.read<uint8_t>();
-        const int size = buffer.read<uint16_t>();
+        unsigned int numSegments = buffer.read<uint8_t>();
+        unsigned int offset = buffer.read<uint16_t>();
+        unsigned int segmentSize = buffer.read<uint16_t>();
+        unsigned int totalSize = buffer.read<uint16_t>();
 
-        bool isEnd = (segmentNumber & (1 << 7));
-        segmentNumber &= ~(1 << 7);
-
-        if (segmentNumber == 0) {
-            auto pingTime = buffer.read<uint32_t>();
-            server.version = buffer.readString();
+        if (!segmentedBuffers.count(id) || segmentedBuffers.at(id).buffer->getLength() != totalSize) {
+            segmentedBuffers[id] = { std::make_unique<Buffer>(totalSize), 0 };
         }
 
-        handleFields(server, buffer, true);
+        if (!segmentedBuffers[id].buffer->copy(buffer.getData() + buffer.tell(), segmentSize, offset)) {
+            printf("Buffer copy failed!\n");
+            segmentedBuffers.erase(id);
+            return;
+        }
+
+        segmentedBuffers[id].segmentsReceived++;
+
+        if (segmentedBuffers.at(id).segmentsReceived == numSegments) {
+            handleFullResponse(server, *segmentedBuffers[id].buffer);
+            segmentedBuffers.erase(id);
+        }
     } else {
         return;
     }
@@ -273,11 +277,14 @@ void ZanQuerent::handleServerResponse(Buffer &buffer, const sockaddr_in &origin)
     server.serverChain = determineServerChain(server, origin);
 }
 
-void ZanQuerent::handleFields(ZanServer &server, Buffer &buffer, bool segmented) {
+void ZanQuerent::handleFullResponse(ZanServer &server, Buffer &buffer) {
+    auto pingTime = buffer.read<uint32_t>();
+    server.version = buffer.readString();
+
     int fieldsetNum = -1;
     uint32_t flags = 0;
     while (!buffer.isEnd()) {
-        fieldsetNum = segmented ? buffer.read<uint8_t>() : fieldsetNum + 1;
+        fieldsetNum = fieldsetNum + 1;
         flags = buffer.read<uint32_t>();
 
         if (fieldsetNum == 0) {
@@ -379,7 +386,7 @@ void ZanQuerent::handleFields(ZanServer &server, Buffer &buffer, bool segmented)
             }
 
             if (server.flags & SQF_PLAYERDATA) {
-                bool isTeam = segmented ? !!buffer.read<uint8_t>() : (server.flags & SQF_TEAMINFO_NUMBER);
+                bool isTeam = (server.flags & SQF_TEAMINFO_NUMBER);
                 for (int i = 0; i < server.players.size(); i++) {
                     ZanPlayer player;
                     player.name = buffer.readString();

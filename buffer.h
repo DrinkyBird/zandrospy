@@ -55,6 +55,8 @@ public:
     void huffmanify();
     void dehuffmanify();
 
+    bool copy(void *src, size_t len, size_t offset);
+
     [[nodiscard]] uint8_t *getData() const;
     [[nodiscard]] size_t getLength() const;
 

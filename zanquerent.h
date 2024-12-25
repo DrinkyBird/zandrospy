@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <string>
 #include <ctime>
+#include <memory>
 #include "socket.h"
 #include "zanserver.h"
 #include "querystats.h"
@@ -12,6 +13,11 @@
 
 class App;
 class Buffer;
+
+struct SegmentStorage {
+    std::unique_ptr<Buffer> buffer;
+    int segmentsReceived;
+};
 
 class ZanQuerent {
 public:
@@ -30,7 +36,7 @@ private:
     void receive();
     void handleMasterResponse(Buffer &buffer);
     void handleServerResponse(Buffer &buffer, const sockaddr_in &origin);
-    void handleFields(ZanServer &server, Buffer &buffer, bool segmented);
+    void handleFullResponse(ZanServer &server, Buffer &buffer);
     int determineServerChain(ZanServer &server, const sockaddr_in &origin);
 
     App *app;
@@ -43,6 +49,7 @@ private:
     std::queue<sockaddr_in> queryQueue;
 
     std::unordered_map<std::string, ZanServer> stagingData;
+    std::unordered_map<std::string, SegmentStorage> segmentedBuffers;
     QueryStats stagingStats;
     MeasureClock::time_point queryStartTime;
 

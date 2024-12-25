@@ -83,5 +83,9 @@ enum
     // [BB] Server is acknowledging the receipt of a ban list.
     SERVER_MASTER_BANLIST_RECEIPT,
 
-    SERVER_LAUNCHER_SEGMENTED_CHALLENGE
+    SERVER_LAUNCHER_CHALLENGE_SEGMENTED_OLD = 5660031,
+
+    // [SB] Server is sending a launcher a segmented response.
+    // Skipped 5660031 for compatiblity with old segmented implementation.
+    SERVER_LAUNCHER_CHALLENGE_SEGMENTED = 5660032,
 };
