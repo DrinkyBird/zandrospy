@@ -13,8 +13,7 @@ static const std::map<int32_t, std::pair<std::string, std::string>> RESPONSE_MAP
 };
 
 static inline void push(const std::unordered_map<int32_t, int> &map, std::vector<std::pair<int32_t, int>> &vec, const int32_t &key) {
-    std::pair<int32_t, int> pair{key, map.at(key)};
-    vec.emplace_back(pair);
+    vec.emplace_back(key, map.at(key));
 }
 
 REGISTER_PLUGIN(servers_response) {
