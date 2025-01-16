@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
+#include "zanproto.h"
 
 enum {
     ServerChain_Other,
@@ -74,7 +75,7 @@ struct ZanServer {
         dehackedPatches(), country("XUN") {}
 
     int32_t response;
-    [[nodiscard]] constexpr inline bool success() const { return response == 5660023 || response == 5660031; }
+    [[nodiscard]] constexpr inline bool success() const { return response == SERVER_LAUNCHER_CHALLENGE || response == SERVER_LAUNCHER_CHALLENGE_SEGMENTED; }
     int serverChain;
 
     std::string version;
