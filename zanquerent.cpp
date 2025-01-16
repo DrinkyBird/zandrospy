@@ -189,12 +189,12 @@ void ZanQuerent::workQueryQueue() {
         return;
     }
 
-    Buffer queryBuf(17);
+    Buffer queryBuf(16);
     queryBuf.write<uint32_t>(199);
     queryBuf.write<uint32_t>(QUERY_1);
     queryBuf.write<uint32_t>(time(nullptr));
     queryBuf.write<uint32_t>(QUERY_2);
-    queryBuf.write<uint8_t>(2);
+    //queryBuf.write<uint8_t>(2);
     queryBuf.huffmanify();
 
     auto front = queryQueue.front();
